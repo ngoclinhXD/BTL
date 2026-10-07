@@ -1,6 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-  /* --- Sidebar nav active state --- */
   document.querySelectorAll('.nav-item').forEach(el => {
     el.addEventListener('click', e => {
       e.preventDefault();
@@ -9,7 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  /* --- Sidebar toggle collapse --- */
   document.getElementById('sidebarToggle').addEventListener('click', () => {
     document.body.classList.toggle('sidebar-collapsed');
   });
