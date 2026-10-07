@@ -160,6 +160,8 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   transition: margin-left var(--transition-slow);
 }
 .content { padding: 24px 28px; }
+.page-message { padding: 32px; color: var(--text-secondary); text-align: center; }
+.page-error { color: var(--accent); }
 
 .sidebar-collapsed .sidebar { width: var(--sidebar-collapsed-width); }
 

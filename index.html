@@ -22,37 +22,33 @@
   </div>
 
   <nav class="sidebar-nav">
-    <a class="nav-item active" href="#" data-page="dashboard" id="nav-dashboard">
+    <a class="nav-item" href="/home" data-page="home" id="nav-dashboard">
       <i class="bi bi-grid-1x2 nav-icon"></i>
       <span class="nav-label">Tổng quan</span>
     </a>
-    <a class="nav-item" href="#" data-page="movies" id="nav-movies">
+    <a class="nav-item" href="/movies" data-page="movies" id="nav-movies">
       <i class="bi bi-film nav-icon"></i>
       <span class="nav-label">Phim</span>
     </a>
-    <a class="nav-item" href="#" data-page="genres" id="nav-genres">
+    <a class="nav-item" href="/genres" data-page="genres" id="nav-genres">
       <i class="bi bi-tags nav-icon"></i>
       <span class="nav-label">Thể loại</span>
     </a>
-    <a class="nav-item" href="#" data-page="showtimes" id="nav-showtimes">
+    <a class="nav-item" href="/showtimes" data-page="showtimes" id="nav-showtimes">
       <i class="bi bi-calendar-event nav-icon"></i>
       <span class="nav-label">Suất chiếu</span>
     </a>
-    <a class="nav-item" href="#" data-page="theaters" id="nav-theaters">
+    <a class="nav-item" href="/theaters" data-page="theaters" id="nav-theaters">
       <i class="bi bi-building nav-icon"></i>
       <span class="nav-label">Rạp chiếu</span>
     </a>
-    <a class="nav-item" href="#" data-page="products" id="nav-products">
+    <a class="nav-item" href="/products" data-page="products" id="nav-products">
       <i class="bi bi-bag nav-icon"></i>
       <span class="nav-label">Sản phẩm</span>
     </a>
-    <a class="nav-item" href="./folder-name/index.html" data-page="bookings" id="nav-bookings">
+    <a class="nav-item" href="/booking" data-page="booking" id="nav-bookings">
       <i class="bi bi-ticket-perforated nav-icon"></i>
       <span class="nav-label">Đặt vé</span>
-    </a>
-    <a class="nav-item" href="#" data-page="users" id="nav-users">
-      <i class="bi bi-people nav-icon"></i>
-      <span class="nav-label">Người dùng</span>
     </a>
   </nav>
 
@@ -68,11 +64,10 @@
 </aside>
 
 <div class="main-wrapper">
-  <main class="content" id="mainContent">
-    <!-- nội dung trang ở đây -->
-  </main>
+  <main class="content" id="content" aria-live="polite"></main>
 </div>
 
+<script src="pages/booking/booking.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
