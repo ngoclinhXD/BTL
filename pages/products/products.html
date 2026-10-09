@@ -1,0 +1,105 @@
+<div class="page-header">
+    <div class="header-left">
+        <h2 class="page-title">Quản lý Sản phẩm</h2>
+        <div class="breadcrumb">
+            <span>Tổng quan</span>
+            <i class="bi bi-chevron-right"></i>
+            <span class="active">Sản phẩm</span>
+        </div>
+    </div>
+    <div class="header-actions">
+        <button class="btn btn-primary" id="btn-add-product" onclick="productPage.openModal()">
+            <i class="bi bi-plus-lg"></i> Thêm mới
+        </button>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <div class="search-box">
+            <i class="bi bi-search"></i>
+            <input type="text" id="search-product" placeholder="Tìm kiếm sản phẩm..." onkeyup="productPage.search()">
+        </div>
+        <div class="filter-box">
+            <select id="filter-status" onchange="productPage.search()">
+                <option value="all">Tất cả trạng thái</option>
+                <option value="active">Đang bán</option>
+                <option value="inactive">Ngừng bán</option>
+            </select>
+        </div>
+    </div>
+    <div class="card-body">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Ảnh</th>
+                    <th>Tên sản phẩm</th>
+                    <th>Danh mục</th>
+                    <th>Giá bán</th>
+                    <th>Tồn kho</th>
+                    <th>Trạng thái</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody id="product-table-body">
+                <!-- Data will be rendered here by JS -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal Thêm/Sửa Sản phẩm -->
+<div id="product-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modal-title">Thêm Sản phẩm mới</h3>
+            <span class="close" onclick="productPage.closeModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+            <form id="product-form" onsubmit="productPage.saveProduct(event)">
+                <input type="hidden" id="product-id">
+                <div class="form-group">
+                    <label>Tên sản phẩm</label>
+                    <input type="text" id="product-name" required>
+                </div>
+                <div class="form-group">
+                    <label>Danh mục</label>
+                    <select id="product-category">
+                        <option value="Đồ ăn">Đồ ăn</option>
+                        <option value="Nước uống">Nước uống</option>
+                        <option value="Combo">Combo</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Mô tả sản phẩm</label>
+                    <textarea id="product-desc" rows="3"></textarea>
+                </div>
+                <div class="form-group row">
+                    <div class="col">
+                        <label>Giá bán (VNĐ)</label>
+                        <input type="number" id="product-price" required min="0" step="1000">
+                    </div>
+                    <div class="col">
+                        <label>Số lượng tồn</label>
+                        <input type="number" id="product-stock" required min="0">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>URL Hình ảnh (Tạm thời)</label>
+                    <input type="text" id="product-image" placeholder="https://link-anh.com/anh.jpg">
+                </div>
+                <div class="form-group">
+                    <label>Trạng thái</label>
+                    <select id="product-status">
+                        <option value="active">Đang bán</option>
+                        <option value="inactive">Ngừng bán</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="productPage.closeModal()">Hủy</button>
+                    <button type="submit" class="btn btn-primary">Lưu thông tin</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
