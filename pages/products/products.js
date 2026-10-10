@@ -10,8 +10,15 @@ window.pages['products'] = {
             { id: 3, name: 'Combo Solo', category: 'Combo', price: 70000, stock: 50, status: 'inactive', image: 'https://cellphones.com.vn/sforum/wp-content/uploads/2023/07/gia-bap-nuoc-cgv-3.jpg', desc: '1 Bắp + 1 Nước' }
         ];
         
-       
         window.productPage = this;
+        
+        // Đóng dropdown khi click ra ngoài
+        document.addEventListener('click', function(e) {
+            const dropdown = document.querySelector('.custom-dropdown');
+            if (dropdown && !dropdown.contains(e.target)) {
+                dropdown.classList.remove('active');
+            }
+        });
         
         // Fetch HTML
         fetch('pages/products/products.html')
@@ -74,6 +81,22 @@ window.pages['products'] = {
         this.renderTable(filtered);
     },
 
+    // --- CÁC HÀM XỬ LÝ DROPDOWN ---
+    toggleDropdown: function() {
+        const dropdown = document.querySelector('.custom-dropdown');
+        if (dropdown) {
+            dropdown.classList.toggle('active');
+        }
+    },
+
+    selectOption: function(value, text) {
+        document.getElementById('dropdown-text').textContent = text;
+        document.getElementById('filter-status').value = value;
+        document.querySelector('.custom-dropdown').classList.remove('active');
+        this.search();
+    },
+    // ----------------------------------------
+
     openModal: function(id = null) {
         const modal = document.getElementById('product-modal');
         const title = document.getElementById('modal-title');
@@ -87,7 +110,11 @@ window.pages['products'] = {
                 document.getElementById('product-id').value = p.id;
                 document.getElementById('product-name').value = p.name;
                 document.getElementById('product-category').value = p.category;
-                document.getElementById('product-desc').value = p.desc;
+                
+                // đảm bảo việc nếu ko có product-desc sẽ ko lỗi
+                const descEl = document.getElementById('product-desc');
+                if(descEl) descEl.value = p.desc || ''; 
+                
                 document.getElementById('product-price').value = p.price;
                 document.getElementById('product-stock').value = p.stock;
                 document.getElementById('product-image').value = p.image !== 'https://via.placeholder.com/50' ? p.image : '';
@@ -109,11 +136,13 @@ window.pages['products'] = {
         event.preventDefault();
         
         const id = document.getElementById('product-id').value;
+        const descEl = document.getElementById('product-desc');
+        
         const newProduct = {
-            id: id ? parseInt(id) : Date.now(), // Generate ID nếu thêm mới
+            id: id ? parseInt(id) : Date.now(),
             name: document.getElementById('product-name').value,
             category: document.getElementById('product-category').value,
-            desc: document.getElementById('product-desc').value,
+            desc: descEl ? descEl.value : '',
             price: parseInt(document.getElementById('product-price').value),
             stock: parseInt(document.getElementById('product-stock').value),
             image: document.getElementById('product-image').value || 'https://via.placeholder.com/50',
@@ -121,11 +150,9 @@ window.pages['products'] = {
         };
 
         if (id) {
-            // cập nhật data
             const index = this.data.findIndex(item => item.id === parseInt(id));
             if (index !== -1) this.data[index] = newProduct;
         } else {
-            // add data mới
             this.data.push(newProduct);
         }
 
@@ -140,7 +167,7 @@ window.pages['products'] = {
     deleteProduct: function(id) {
         if (confirm('Bạn có chắc chắn muốn xóa sản phẩm này không?')) {
             this.data = this.data.filter(item => item.id !== id);
-            this.search(); // Render lại theo bộ lọc hiện tại
+            this.search(); 
         }
     }
 };

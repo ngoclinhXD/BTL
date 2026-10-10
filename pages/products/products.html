@@ -1,67 +1,92 @@
+<!-- Tiêu đề trang -->
 <div class="page-header">
-    <div class="header-left">
+    <div class="header-info">
         <h2 class="page-title">Quản lý Sản phẩm</h2>
         <div class="breadcrumb">
-            <span>Tổng quan</span>
-            <i class="bi bi-chevron-right"></i>
-            <span class="active">Sản phẩm</span>
+            <span>Tổng quan</span> <i class="bi bi-chevron-right"></i> <span class="active">Sản phẩm</span>
         </div>
-    </div>
-    <div class="header-actions">
-        <button class="btn btn-primary" id="btn-add-product" onclick="productPage.openModal()">
-            <i class="bi bi-plus-lg"></i> Thêm mới
-        </button>
     </div>
 </div>
 
+<!-- Khối Bảng dữ liệu chính -->
 <div class="card">
+    <!-- Tool bar -->
     <div class="card-header">
-        <div class="search-box">
-            <i class="bi bi-search"></i>
-            <input type="text" id="search-product" placeholder="Tìm kiếm sản phẩm..." onkeyup="productPage.search()">
+        
+        <!-- thanh tìm kiếm và custom dropdown -->
+        <div class="header-actions-left">
+            <div class="search-box">
+                <i class="bi bi-search"></i>
+                <input type="text" id="search-product" placeholder="Tìm kiếm sản phẩm..." onkeyup="productPage.search()">
+            </div>
+            
+            <div class="filter-box custom-dropdown">
+                <!-- ẩn thẻ select thật đi -->
+                <select id="filter-status" style="display: none;">
+                    <option value="all">Tất cả trạng thái</option>
+                    <option value="active">Đang bán</option>
+                    <option value="inactive">Ngừng bán</option>
+                </select>
+                
+                <!-- Giao diện hiển thị Dropdown -->
+                <div class="dropdown-selected" onclick="productPage.toggleDropdown()">
+                    <span id="dropdown-text">Tất cả trạng thái</span>
+                    <i class="bi bi-chevron-down"></i>
+                </div>
+                
+                <!-- Danh sách lựa chọn -->
+                <ul class="dropdown-options" id="dropdown-options">
+                    <li onclick="productPage.selectOption('all', 'Tất cả trạng thái')">Tất cả trạng thái</li>
+                    <li onclick="productPage.selectOption('active', 'Đang bán')">Đang bán</li>
+                    <li onclick="productPage.selectOption('inactive', 'Ngừng bán')">Ngừng bán</li>
+                </ul>
+            </div>
         </div>
-        <div class="filter-box">
-            <select id="filter-status" onchange="productPage.search()">
-                <option value="all">Tất cả trạng thái</option>
-                <option value="active">Đang bán</option>
-                <option value="inactive">Ngừng bán</option>
-            </select>
+
+        <!-- nút thêm mới -->
+        <div class="header-actions-right">
+            <button class="btn btn-primary" onclick="productPage.openModal()">
+                <i class="bi bi-plus-lg"></i> Thêm sản phẩm
+            </button>
         </div>
     </div>
-    <div class="card-body">
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>Ảnh</th>
-                    <th>Tên sản phẩm</th>
-                    <th>Danh mục</th>
-                    <th>Giá bán</th>
-                    <th>Tồn kho</th>
-                    <th>Trạng thái</th>
-                    <th>Thao tác</th>
-                </tr>
-            </thead>
-            <tbody id="product-table-body">
-                <!-- Data will be rendered here by JS -->
-            </tbody>
-        </table>
-    </div>
+
+    <!-- Bảng danh sách sản phẩm -->
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Ảnh</th>
+                <th>Tên sản phẩm</th>
+                <th>Danh mục</th>
+                <th>Giá bán</th>
+                <th>Tồn kho</th>
+                <th>Trạng thái</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody id="product-table-body">
+            <!-- nơi nhận dữ liệu sp từ jv -->
+        </tbody>
+    </table>
 </div>
 
-<!-- Modal Thêm/Sửa Sản phẩm -->
+<!-- modal popup thêm/sửa sp -->
 <div id="product-modal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
             <h3 id="modal-title">Thêm Sản phẩm mới</h3>
             <span class="close" onclick="productPage.closeModal()">&times;</span>
         </div>
-        <div class="modal-body">
-            <form id="product-form" onsubmit="productPage.saveProduct(event)">
+        
+        <form id="product-form" onsubmit="productPage.saveProduct(event)">
+            <div class="modal-body">
                 <input type="hidden" id="product-id">
+
                 <div class="form-group">
                     <label>Tên sản phẩm</label>
-                    <input type="text" id="product-name" required>
+                    <input type="text" id="product-name" placeholder="Nhập tên sản phẩm..." required>
                 </div>
+                
                 <div class="form-group">
                     <label>Danh mục</label>
                     <select id="product-category">
@@ -70,24 +95,27 @@
                         <option value="Combo">Combo</option>
                     </select>
                 </div>
+                
                 <div class="form-group">
                     <label>Mô tả sản phẩm</label>
-                    <textarea id="product-desc" rows="3"></textarea>
+                    <textarea id="product-desc" rows="3" placeholder="Nhập mô tả chi tiết..."></textarea>
                 </div>
-                <div class="form-group row">
-                    <div class="col">
-                        <label>Giá bán (VNĐ)</label>
-                        <input type="number" id="product-price" required min="0" step="1000">
-                    </div>
-                    <div class="col">
-                        <label>Số lượng tồn</label>
-                        <input type="number" id="product-stock" required min="0">
-                    </div>
-                </div>
+                
                 <div class="form-group">
-                    <label>URL Hình ảnh (Tạm thời)</label>
-                    <input type="text" id="product-image" placeholder="https://link-anh.com/anh.jpg">
+                    <label>Giá bán (VNĐ)</label>
+                    <input type="number" id="product-price" placeholder="Ví dụ: 45000" required>
                 </div>
+                
+                <div class="form-group">
+                    <label>Số lượng tồn</label>
+                    <input type="number" id="product-stock" placeholder="0" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>URL Hình ảnh</label>
+                    <input type="text" id="product-image" placeholder="https://...">
+                </div>
+                
                 <div class="form-group">
                     <label>Trạng thái</label>
                     <select id="product-status">
@@ -95,11 +123,12 @@
                         <option value="inactive">Ngừng bán</option>
                     </select>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="productPage.closeModal()">Hủy</button>
-                    <button type="submit" class="btn btn-primary">Lưu thông tin</button>
-                </div>
-            </form>
-        </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-icon" onclick="productPage.closeModal()">Hủy</button>
+                <button type="submit" class="btn btn-primary">Lưu thông tin</button>
+            </div>
+        </form>
     </div>
 </div>
