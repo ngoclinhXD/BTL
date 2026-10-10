@@ -1,0 +1,116 @@
+#genresPage [hidden] {
+  display: none !important;
+}
+
+#genresPage #genreSearch {
+  width: 420px;
+  max-width: 100%;
+}
+
+#mainContent #genresPage .genres-table {
+  min-width: 650px;
+}
+
+#mainContent #genresPage .genres-table td {
+  height: auto;
+  padding: 20px 14px;
+}
+
+#mainContent #genresPage .genres-table th:nth-child(1) {
+  width: 60px;
+}
+
+#mainContent #genresPage .genres-table th:nth-child(2) {
+  width: 24%;
+}
+
+#mainContent #genresPage .genres-table th:nth-child(3) {
+  width: auto;
+}
+
+#mainContent #genresPage .genres-table th:nth-child(4) {
+  width: 130px;
+}
+
+#genresPage .genre-name {
+  font-weight: 700;
+  color: #222;
+}
+
+#genresPage .genre-card {
+  padding: 26px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgb(0 0 0 / 6%);
+}
+
+#genresPage .genre-card h3 {
+  margin-bottom: 22px;
+  font-size: 18px;
+}
+
+#genreForm {
+  display: grid;
+  gap: 10px;
+}
+
+#genreForm label {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+#genreForm .required {
+  color: #dc3545;
+}
+
+#genreForm input,
+#genreForm textarea {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: white;
+  color: #344454;
+  font: inherit;
+}
+
+#genreForm textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+#genreForm input:focus,
+#genreForm textarea:focus {
+  outline: 2px solid #9fc3df;
+  outline-offset: 1px;
+}
+
+#genresPage .genre-form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+#genresPage .genre-cancel {
+  padding: 14px 22px;
+  border-radius: 5px;
+  background: #78818a;
+  color: white;
+}
+
+#genreNotice {
+  margin-top: 16px;
+  color: #278044;
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  #genresPage #genreSearch {
+    width: 100%;
+  }
+
+  #genresPage .genre-card {
+    padding: 18px;
+  }
+}

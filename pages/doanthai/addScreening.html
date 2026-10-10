@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hệ thống Quản lý Rạp Chiếu Phim</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="addScreening.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <main class="content" id="mainContent">
+    <!-- nội dung trang ở đây -->
+     <section>
+          <article>
+            <div>
+                <h2>Thêm suất chiếu mới</h2>
+            </div>
+            <div>
+                <label>Phim:</label>
+                <select id="movieSelect">
+                    <option value="">Chọn phim</option>
+                </select>
+            </div>
+            <div>
+                <label>Rạp chiếu:</label>
+                <select id="theaterSelect">
+                    <option value="">Chọn rạp</option>
+                </select>
+            </div>
+                <label>Phòng chiếu:</label>
+                <select id="roomSelect">
+                    <option value="">Chọn phòng</option>
+                </select>
+            <div>
+            <div class="input">
+                <label>Ngày chiếu:</label>
+                <input type="date" id="showDate">
+            </div>
+            <div class="input">
+                <label>Giờ chiếu:</label>
+                <input type="time" id="showTime">
+            </div>
+            <div class="input">    
+                <label>Giá vé:</label>
+                <input type="number" id="ticketPrice" placeholder="Nhập giá vé">
+            </div>
+            <div>
+                <button type="submit" id="movieSubmit">Tạo mới</button>
+                <button type="reset" id="movieReset">Hủy</button>
+            </div>
+          </article>
+     </section>
+    </main>
+
+<script src="app.js"></script>
+</body>
+</html>
