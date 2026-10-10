@@ -14,7 +14,6 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.classList.add("sidebar-collapsed");
   });
 });
-// MOVIES
 
 
 function initMoviesPage() {
@@ -28,7 +27,6 @@ function initMoviesPage() {
   const cancelButton = document.getElementById("cancel");
   const formTitle = document.getElementById("form-title");
 
-  // Chỉ chạy khi nội dung trang Phim đã có trong HTML.
   if (!tbody || !search || !filter || !list || !editor ||
   !form || !addButton || !cancelButton || !formTitle) {
     return;
@@ -112,13 +110,11 @@ function initMoviesPage() {
 
 cells[0].append(poster);
 
-      // Tên phim
       cells[1].append(
         createElement("div", movie.title, "title"),
         createElement("div", movie.subtitle || "", "subtitle")
       );
 
-      // Thể loại
       const tags = createElement("div", undefined, "tags");
 
       movie.genres.forEach(genre => {
@@ -131,7 +127,6 @@ cells[0].append(poster);
 
       cells[2].append(tags);
 
-      // Thời lượng và ngày khởi chiếu
       cells[3].textContent = `${movie.duration} phút`;
       const screeningLink = createElement("a", movie.date.split("-").reverse().join("/"));
       screeningLink.href = "../../index.html#showtimes?" + new URLSearchParams({
@@ -140,17 +135,14 @@ cells[0].append(poster);
       screeningLink.target = "_top";
       cells[4].append(screeningLink);
 
-      // Trạng thái
       cells[5].append(
         createElement("span", statusLabels[cinemaState.movieStatus(movie)],`status ${cinemaState.movieStatus(movie)}`));
 
-      // Đánh giá
       cells[6].className = "rating";
       cells[6].append(
         createElement("span", "★ ", "star"),
         document.createTextNode(`${(movie.rating ?? 0).toFixed(1)}/10`)
       );
-      // Nút sửa và xóa
       cells[7].className = "actions";
 
       const editButton = createElement("button", undefined, "edit");
@@ -204,7 +196,6 @@ cells[0].append(poster);
       "Chính kịch", "Hài", "Hành động", "Hoạt hình","Khoa học viễn tưởng", "Kinh dị", "Phiêu lưu", "Tình cảm"
     ];
 
-    //xoa checkbox cu
 
     genreOptions.replaceChildren();
     availableGenres.forEach(genre => {
@@ -248,7 +239,6 @@ cells[0].append(poster);
   }
 
   posterFile.onchange = () => {
-    // Bỏ kết quả đọc ảnh cũ nếu người dùng chọn lại
     const version = ++imageReadVersion;
     posterLoading = false;
 
@@ -409,18 +399,15 @@ cells[0].append(poster);
 
   renderMovies();
 }
-// Khởi tạo khi HTML đã tải xong.
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", initMoviesPage);
 } else {
   initMoviesPage();
 }
 
-// GENRES
 function initGenresPage() {
   const page = document.getElementById("genresPage");
 
-  // Chỉ chạy trên trang thể loại
   if (!page) return;
 
   const tbody = document.getElementById("genresTable");
@@ -434,7 +421,6 @@ function initGenresPage() {
   const saveButton = document.getElementById("saveGenre");
   const notice = document.getElementById("genreNotice");
 
-  // Không lưu localStorage: F5 sẽ khôi phục danh sách này
   let defaultGenres = [
     {
       id: 1,
@@ -630,7 +616,6 @@ function initGenresPage() {
       });
     }
     saveGenres();
-    // Hiện lại toàn bộ danh sách sau khi lưu
     search.value = "";
     renderGenres();
     closeEditor();

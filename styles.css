@@ -167,8 +167,6 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 .iframe-page { display: block; }
 .login-screen .sidebar { display: none; }
 .application-shell.login-screen .main-wrapper { margin-left: 0; }
-.page-message { padding: 32px; color: var(--text-secondary); text-align: center; }
-.page-error { color: var(--accent); }
 
 .sidebar-collapsed .sidebar { width: var(--sidebar-collapsed-width); }
 
@@ -191,6 +189,5 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 
 @media (max-width: 768px) {
   .sidebar { transform: translateX(calc(-100% - var(--sidebar-gap) * 2)); transition: transform var(--transition-slow), width var(--transition-slow); }
-  .sidebar-open .sidebar { transform: translateX(0); }
   .main-wrapper { margin-left: 0 !important; }
 }
