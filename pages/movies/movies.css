@@ -60,7 +60,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   border-radius: 5px;
 }
 
-#mainContent .primary,.primary {
+#mainContent .primary {
   padding: 14px 22px;
   background: #d32f2f;
   color: white;
