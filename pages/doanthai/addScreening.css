@@ -1,6 +1,17 @@
-body
-{
+body {
     box-sizing: border-box;
+    margin: 0 auto;
+}
+
+main {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    min-height: 100vh;
+}
+
+main > section {
+    width: 100%;
 }
 
 article
@@ -8,8 +19,17 @@ article
     background-color: var(--sidebar-bg);
     padding: 20px;
     border-radius: 8px;
-    margin-bottom: 20px;
+    margin-bottom: 0;
     box-shadow: var(--shadow-sidebar);
+}
+
+div {
+    margin: 10px 0;
+}
+
+label {
+    display: inline-block;
+    padding: 5px 0;
 }
 
 select
@@ -24,10 +44,6 @@ select
     min-width: 150px;
 }
 
-div
-{
-    margin: 20px 0;
-} 
 
 div.input
 {
