@@ -11,7 +11,7 @@ function renderOverview() {
   document.getElementById('showingMovies').textContent = cinemaState.movies.filter(movie =>
     cinemaState.movieStatus(movie, today) === 'showing').length;
   document.getElementById('totalBookings').textContent = cinemaState.bookings.length;
-  document.getElementById('showingLink').href = '../../../index.html#theaters?date=' + today;
+  document.getElementById('showingLink').href = '../../../index.html#showtimes?date=' + today;
 }
 renderOverview();
 setInterval(renderOverview, 1000);
