@@ -1,7 +1,4 @@
-window.pages = window.pages || {};
-
-window.pages['products'] = {
-    html: '', 
+window.productPage = {
     init: function() {
         // Mock data ban đầu
         this.data = [
@@ -9,22 +6,8 @@ window.pages['products'] = {
             { id: 2, name: 'Coca Cola', category: 'Nước uống', price: 30000, stock: 250, status: 'active', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQwAa7Fx-0Z1kRQ4Xtin2KegNgCW2KRHws759irIlETyA&s=10', desc: 'Coca tươi' },
             { id: 3, name: 'Combo Solo', category: 'Combo', price: 70000, stock: 50, status: 'inactive', image: 'https://cellphones.com.vn/sforum/wp-content/uploads/2023/07/gia-bap-nuoc-cgv-3.jpg', desc: '1 Bắp + 1 Nước' }
         ];
-        
-       
-        window.productPage = this;
-        
-        // Fetch HTML
-        fetch('pages/products/products.html')
-            .then(response => response.text())
-            .then(html => {
-                document.getElementById('content').innerHTML = html;
-                this.renderTable(this.data);
-            });
 
-        // Hàm dọn dẹp khi chuyển trang 
-        return () => {
-            delete window.productPage;
-        };
+        this.renderTable(this.data);
     },
 
     renderTable: function(dataToRender) {
@@ -144,3 +127,5 @@ window.pages['products'] = {
         }
     }
 };
+
+window.productPage.init();

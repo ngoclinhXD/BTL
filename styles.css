@@ -160,6 +160,11 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   transition: margin-left var(--transition-slow);
 }
 .content { padding: 24px 28px; }
+.application-shell { height: 100vh; overflow: hidden; }
+.application-shell .main-wrapper { display: flex; flex-direction: column; }
+.application-shell .content { display: flex; flex: 1; min-height: 0; padding: 0; }
+#pageFrame { display: block; flex: 1; width: 100%; min-width: 0; height: 100%; border: 0; }
+.iframe-page { display: block; }
 .page-message { padding: 32px; color: var(--text-secondary); text-align: center; }
 .page-error { color: var(--accent); }
 

@@ -122,8 +122,10 @@
 
 .data-table {
   width: 100%;
+  min-width: 760px;
   border-collapse: collapse;
 }
+.card-body { overflow-x: auto; }
 
 .data-table th, .data-table td {
   padding: 12px 20px;
@@ -201,6 +203,8 @@
   border-radius: 12px;
   width: 500px;
   max-width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
   box-shadow: 0 10px 30px rgba(0,0,0,0.1);
   animation: modalSlideIn 0.3s ease;
 }
@@ -281,4 +285,10 @@
   display: flex;
   justify-content: flex-end;
   gap: 12px;
+}
+
+@media (max-width: 720px) {
+  .page-header, .card-header { flex-wrap: wrap; gap: 16px; }
+  .search-box { width: 100%; }
+  .form-group.row .col { min-width: 0; }
 }
