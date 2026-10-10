@@ -6,7 +6,7 @@
 
   --bg-primary: #f0f2f7;
   --sidebar-bg: #ffffff;
-  --accent: #e53935;
+  --accent: #d32f2f;
   --accent-hover: #c62828;
   --accent-light: rgba(229,57,53,0.10);
   --text-primary: #1a1d2e;
@@ -165,6 +165,8 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 .application-shell .content { display: flex; flex: 1; min-height: 0; padding: 0; }
 #pageFrame { display: block; flex: 1; width: 100%; min-width: 0; height: 100%; border: 0; }
 .iframe-page { display: block; }
+.login-screen .sidebar { display: none; }
+.application-shell.login-screen .main-wrapper { margin-left: 0; }
 .page-message { padding: 32px; color: var(--text-secondary); text-align: center; }
 .page-error { color: var(--accent); }
 
