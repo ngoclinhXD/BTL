@@ -2,20 +2,32 @@
   const frame = document.getElementById('pageFrame');
   const content = frame.parentElement;
   const routes = {
+    home: 'pages/lam/tongquan/index.html',
     booking: 'pages/booking/booking.html',
     products: 'pages/products/products.html'
   };
+  const pageTitles = { login: 'Đăng nhập', home: 'Tổng quan', booking: 'Quản lý đặt vé', products: 'Quản lý Sản phẩm' };
   const appState = { movies: [] };
+  const loginKey = 'btl.loggedIn';
+  let loggedIn;
+  try {
+    loggedIn = window.sessionStorage.getItem(loginKey) === 'true' || window.name === loginKey;
+  } catch {
+    // shortcut: file:// may block storage; window.name keeps this demo flag in the tab until logout or close.
+    loggedIn = window.name === loginKey;
+  }
   let currentPage;
 
   function loadPage() {
     const hash = window.location.hash.slice(1);
-    const page = Object.hasOwn(routes, hash) ? hash : 'booking';
+    const page = loggedIn ? (Object.hasOwn(routes, hash) ? hash : 'home') : 'login';
+    if (hash !== page) window.location.replace(`${window.location.href.split('#')[0]}#${page}`);
+    document.body.classList.toggle('login-screen', !loggedIn);
     if (page !== currentPage) {
       // Recreate the browsing context so iframe navigation adds no extra Back/Forward steps.
       if (currentPage !== undefined) frame.remove();
-      frame.title = page === 'booking' ? 'Quản lý đặt vé' : 'Quản lý Sản phẩm';
-      frame.src = routes[page];
+      frame.title = pageTitles[page];
+      frame.src = page === 'login' ? 'pages/lam/login/index.html' : routes[page];
       if (currentPage !== undefined) content.append(frame);
       currentPage = page;
     }
@@ -30,6 +42,23 @@
   window.addEventListener('message', event => {
     const message = event.data;
     if (event.source !== frame.contentWindow || !message || typeof message !== 'object' || Array.isArray(message)) return;
+    if (!loggedIn) {
+      if (message.type !== 'LOGIN') return;
+      // shortcut: this is a client-side demo login, use server authentication for real accounts.
+      if (message.username !== 'utcadmin' || message.password !== '12345678') {
+        frame.contentWindow.postMessage({ type: 'LOGIN_ERROR' }, '*');
+        return;
+      }
+      loggedIn = true;
+      try {
+        window.sessionStorage.setItem(loginKey, 'true');
+      } catch {
+        window.name = loginKey;
+      }
+      window.location.replace(`${window.location.href.split('#')[0]}#home`);
+      loadPage();
+      return;
+    }
     if (message.type === 'ADD_MOVIE') {
       const movie = message.movie;
       if (!movie || typeof movie !== 'object' || Array.isArray(movie) ||
@@ -46,7 +75,17 @@
   document.getElementById('sidebarToggle').addEventListener('click', () => {
     document.body.classList.toggle('sidebar-collapsed');
   });
+  document.getElementById('btnLogout').addEventListener('click', () => {
+    loggedIn = false;
+    appState.movies = [];
+    try {
+      window.sessionStorage.removeItem(loginKey);
+    } catch {
+      // The storage API may be unavailable for local files.
+    }
+    if (window.name === loginKey) window.name = '';
+    loadPage();
+  });
   window.addEventListener('hashchange', loadPage);
-  if (!window.location.hash) window.location.replace(`${window.location.href.split('#')[0]}#booking`);
   loadPage();
 })();

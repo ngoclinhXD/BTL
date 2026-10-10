@@ -37,7 +37,7 @@ body {
 }
 
 .error {
-    color: red;
+    color: #c62828;
     font-size: 12px;
     margin-top: 5px;
     display: none;
@@ -64,7 +64,7 @@ form:has(:invalid) button {
 button {
     width: 100%;
     padding: 10px;
-    background: #007bff;
+    background: #0069d9;
     border: none;
     color: white;
     font-size: 16px;
