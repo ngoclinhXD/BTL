@@ -1,0 +1,705 @@
+document.addEventListener("DOMContentLoaded", () => {
+  const sidebar = document.getElementById("sidebar");
+  const toggle = document.getElementById("sidebarToggle");
+
+  document.body.classList.add("sidebar-collapsed");
+
+  toggle.addEventListener("mouseenter", () => {
+    document.body.classList.remove("sidebar-collapsed");
+  });
+
+  sidebar.addEventListener("mouseleave", () => {
+    document.body.classList.add("sidebar-collapsed");
+  });
+});
+//F5 mới load lại
+const navigation = performance.getEntriesByType("navigation")[0];
+
+if (navigation?.type === "reload") {
+  sessionStorage.removeItem("btl-movies");
+  sessionStorage.removeItem("btl-genres");
+}
+// MOVIES
+
+
+function initMoviesPage() {
+  const tbody = document.getElementById("movies");
+  const search = document.getElementById("search");
+  const filter = document.getElementById("filter");
+  const list = document.getElementById("movieList");
+  const editor = document.getElementById("movieEditor");
+  const form = document.getElementById("movie-form");
+  const addButton = document.getElementById("add");
+  const cancelButton = document.getElementById("cancel");
+  const formTitle = document.getElementById("form-title");
+
+  // Chỉ chạy khi nội dung trang Phim đã có trong HTML.
+  if (!tbody || !search || !filter || !list || !editor ||
+  !form || !addButton || !cancelButton || !formTitle) {
+    return;
+  }
+
+
+  const defaultMovies = [
+    {
+      id: 1,
+      poster: "images/Muado.jpg",
+      title: "Mưa đỏ",
+      subtitle: "mua do",
+      genres: ["Chính kịch", "Hành động", "Phiêu lưu", "Tình cảm"],
+      duration: 150,
+      date: "2025-11-20",
+      status: "ended",
+      rating: 8.0,
+      color: "#9e2b27"
+    },
+    {
+      id: 2,
+      poster: "images/Dune.jpeg",
+      title: "Dune",
+      subtitle: "Dune",
+      genres: ["Chính kịch", "Khoa học viễn tưởng", "Phiêu lưu"],
+      duration: 155,
+      date: "2025-11-17",
+      status: "ended",
+      rating: 8.5,
+      color: "#a77b51"
+    },
+    {
+      id: 3,
+      poster: "images/nowayhome.jpg",
+      title: "Spider-Man: No Way Home",
+      subtitle: "Người Nhện",
+      genres: ["Hành động", "Khoa học viễn tưởng"],
+      duration: 148,
+      date: "2025-12-17",
+      status: "showing",
+      rating: 9.5,
+      color: "#554074"
+    },
+    {
+      id: 4,
+      poster: "images/Avengers_ Endgame Encore.jpg",
+      title: "Avengers: Endgame Encore",
+      subtitle: "Biệt Đội Siêu Anh Hùng: Hồi Kết - Phiên bản đặc biệt(Chiếu lại)",
+      genres: ["Hành động", "Khoa học viễn tưởng", "Phiêu lưu"],
+      duration: 183,
+      date: "2026-09-25",
+      status: "showing",
+      rating: 8.5,
+      color: "#256372"
+    },
+    {
+      id: 5,
+      poster: "images/Shaunthesheep.jpg",
+      title: "Shaun The Sheep",
+      subtitle: "Quái lạ ghé nhà",
+      genres: ["Hoạt hình", "Hài", "Phiêu lưu"],
+      duration: 81,
+      date: "2026-10-16",
+      status: "soon",
+      rating: 0.0,
+      color: "#363636"
+    }
+  ];
+
+  const statusLabels = {
+    showing: "ĐANG CHIẾU",
+    soon: "SẮP CHIẾU",
+    ended: "NGỪNG CHIẾU"
+  };
+
+  let movies = JSON.parse(sessionStorage.getItem("btl-movies")) ?? defaultMovies;
+  let editingId = null;
+
+
+  function createElement(tag, text, className) {
+    const element = document.createElement(tag);
+
+    if (text !== undefined) {
+      element.textContent = text;
+    }
+
+    if (className) {
+      element.className = className;
+    }
+
+    return element;
+  }
+
+  function saveMovies() {
+    sessionStorage.setItem("btl-movies", JSON.stringify(movies));
+    renderMovies();
+    }
+
+  function renderMovies() {
+    tbody.replaceChildren();
+
+    const keyword = search.value.trim().toLocaleLowerCase("vi");
+
+    const results = movies.filter(movie => {
+      const matchesSearch = movie.title
+        .toLocaleLowerCase("vi")
+        .includes(keyword);
+
+      const matchesStatus =
+        filter.value === "" || movie.status === filter.value;
+
+      return matchesSearch && matchesStatus;
+    });
+
+    if (results.length === 0) {
+      const row = createElement("tr");
+      const cell = createElement("td", "Không tìm thấy phim.", "empty");
+
+      cell.colSpan = 8;
+      row.append(cell);
+      tbody.append(row);
+      return;
+    }
+
+    results.forEach(movie => {
+      const row = createElement("tr");
+      const cells = Array.from(
+        { length: 8 },
+        () => createElement("td")
+      );
+
+    let poster;
+
+    if (movie.poster) {
+        poster = createElement("img", undefined, "poster");
+        poster.src = movie.poster;
+        poster.alt = movie.title;
+    } 
+    else {
+        poster = createElement("div", movie.title, "poster");
+        poster.style.backgroundColor = movie.color || "#31465a";
+    }
+
+cells[0].append(poster);
+
+      // Tên phim
+      cells[1].append(
+        createElement("div", movie.title, "title"),
+        createElement("div", movie.subtitle || "", "subtitle")
+      );
+
+      // Thể loại
+      const tags = createElement("div", undefined, "tags");
+
+      movie.genres.forEach(genre => {
+        const tag = createElement("span", undefined, "tag");
+        const icon = createElement("i", undefined, "bi bi-tag-fill");
+
+        tag.append(icon, document.createTextNode(genre));
+        tags.append(tag);
+    });
+
+      cells[2].append(tags);
+
+      // Thời lượng và ngày khởi chiếu
+      cells[3].textContent = `${movie.duration} phút`;
+      cells[4].textContent = movie.date.split("-").reverse().join("/");
+
+      // Trạng thái
+      cells[5].append(
+        createElement("span", statusLabels[movie.status],`status ${movie.status}`));
+
+      // Đánh giá
+      cells[6].className = "rating";
+      cells[6].append(
+        createElement("span", "★ ", "star"),
+        document.createTextNode(`${(movie.rating ?? 0).toFixed(1)}/10`)
+      );
+      // Nút sửa và xóa
+      cells[7].className = "actions";
+
+      const editButton = createElement("button", undefined, "edit");
+      editButton.type = "button";
+      editButton.title = "Sửa phim";
+      editButton.setAttribute("aria-label", `Sửa ${movie.title}`);
+      editButton.append(
+        createElement("i", undefined, "bi bi-pencil-square")
+      );
+      editButton.onclick = () => openForm(movie);
+
+      const deleteButton = createElement("button", undefined, "delete");
+      deleteButton.type = "button";
+      deleteButton.title = "Xóa phim";
+      deleteButton.setAttribute("aria-label", `Xóa ${movie.title}`);
+      deleteButton.append(
+        createElement("i", undefined, "bi bi-trash-fill")
+      );
+
+      deleteButton.onclick = () => {
+        if (confirm(`Bạn muốn xóa phim "${movie.title}"?`)) {
+          movies = movies.filter(item => item.id !== movie.id);
+          saveMovies();
+        }
+      };
+
+      cells[7].append(editButton, deleteButton);
+      row.append(...cells);
+      tbody.append(row);
+    });
+  }
+
+  const posterFile = document.getElementById("posterFile");
+  const previewBox = document.getElementById("posterPreviewBox");
+  const preview = document.getElementById("posterPreview");
+  const genreOptions = document.getElementById("movieGenreOptions");
+  const saveButton = document.getElementById("saveMovie");
+
+  let currentPoster = "";
+  let posterLoading = false;
+  let imageReadVersion = 0;
+
+  function renderGenresOptions(){
+    const savedGenres = JSON.parse(sessionStorage.getItem("btl-genres"));
+    const availableGenres = savedGenres !== null ? savedGenres.map(genre => genre.name)
+    : [
+      "Chính kịch", "Hài", "Hành động", "Hoạt hình","Khoa học viễn tưởng", "Kinh dị", "Phiêu lưu", "Tình cảm"
+    ];
+
+    //xoa checkbox cu
+
+    genreOptions.replaceChildren();
+    availableGenres.forEach(genre => {
+      const label=document.createElement("label");
+      const input=document.createElement("input");
+      input.type = "checkbox";
+      input.name = "genres";
+      input.value = genre;
+
+      label.append(input,genre);
+      genreOptions.append(label);
+    });
+  }
+
+  function updateSelectedGenres() {
+    const selected = Array.from(
+      genreOptions.querySelectorAll("input:checked")
+    ).map(input => input.value);
+
+    document.getElementById("selectedGenreCount").textContent =
+      selected.length;
+
+    const tags = document.getElementById("selectedGenreTags");
+    tags.replaceChildren();
+
+    selected.forEach(genre => {
+      tags.append(createElement("span", genre, "tag"));
+    });
+  }
+
+  genreOptions.onchange = updateSelectedGenres;
+
+  function updatePosterPreview() {
+    previewBox.hidden = !currentPoster;
+
+    if (currentPoster) {
+      preview.src = currentPoster;
+    } else {
+      preview.removeAttribute("src");
+    }
+  }
+
+  posterFile.onchange = () => {
+    // Bỏ kết quả đọc ảnh cũ nếu người dùng chọn lại
+    const version = ++imageReadVersion;
+    posterLoading = false;
+
+    const file = posterFile.files[0];
+    if (!file) return;
+
+    const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
+
+    if (!allowedTypes.includes(file.type) || file.size > 5 * 1024 * 1024) {
+      alert("Chọn ảnh JPG, PNG hoặc GIF không quá 5MB.");
+      posterFile.value = "";
+      return;
+    }
+
+    posterLoading = true;
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      if (version !== imageReadVersion) return;
+
+      currentPoster = reader.result;
+      posterLoading = false;
+      updatePosterPreview();
+    };
+
+    reader.onerror = () => {
+      if (version !== imageReadVersion) return;
+
+      posterLoading = false;
+      posterFile.value = "";
+      alert("Không đọc được ảnh, bạn hãy chọn lại.");
+    };
+
+    reader.readAsDataURL(file);
+  };
+
+  document.getElementById("removePoster").onclick = () => {
+    imageReadVersion++;
+    posterLoading = false;
+    currentPoster = "";
+    posterFile.value = "";
+    updatePosterPreview();
+  };
+
+  function openForm(movie = null) {
+    imageReadVersion++;
+    posterLoading = false;
+    form.reset();
+
+    renderGenresOptions();
+
+    editingId = movie ? movie.id : null;
+    currentPoster = movie?.poster || "";
+
+    formTitle.textContent = movie ? "Sửa phim" : "Thêm phim mới";
+    saveButton.textContent = movie ? "Cập nhật" : "Tạo mới";
+
+    if (movie) {
+      const names = [
+        "title", "subtitle", "duration", "date", "endDate", "age", "language", "subtitles", "status"
+      ];
+
+      names.forEach(name => {
+        form.elements.namedItem(name).value = movie[name] ?? "";
+      });
+    }
+
+    genreOptions.querySelectorAll("input").forEach(input => {
+      input.checked = movie ? movie.genres.includes(input.value) : false;
+    });
+
+    updatePosterPreview();
+    updateSelectedGenres();
+
+    list.hidden = true;
+    editor.hidden = false;
+    window.scrollTo({ top: 0 });
+  }
+
+  function closeMovieEditor() {
+    imageReadVersion++;
+    posterLoading = false;
+    editor.hidden = true;
+    list.hidden = false;
+    window.scrollTo({ top: 0 });
+  }
+
+  form.onsubmit = event => {
+    event.preventDefault();
+
+    if (posterLoading) {
+      alert("Ảnh đang được đọc, bạn đợi một chút rồi lưu nhé.");
+      return;
+    }
+
+    const fields = new FormData(form);
+
+    const movieData = {
+      title: String(fields.get("title") || "").trim(),
+      subtitle: String(fields.get("subtitle") || "").trim(),
+      duration: Number(fields.get("duration")),
+      date: String(fields.get("date") || ""),
+      endDate: String(fields.get("endDate") || ""),
+      age: String(fields.get("age") || ""),
+      language: String(fields.get("language") || "").trim(),
+      subtitles: String(fields.get("subtitles") || "").trim(),
+      status: String(fields.get("status") || ""),
+      genres: fields.getAll("genres"),
+      poster: currentPoster
+    };
+
+    if (
+      !movieData.title ||
+      !movieData.genres.length ||
+      !Number.isFinite(movieData.duration) ||
+      movieData.duration < 1 ||
+      movieData.duration > 600 ||
+      !movieData.date ||
+      !(movieData.status in statusLabels)
+    ) {
+      alert("Dữ liệu không hợp lệ!");
+      return;
+    }
+
+    if (movieData.endDate && movieData.endDate < movieData.date) {
+      alert("Ngày kết thúc phải từ ngày khởi chiếu trở đi.");
+      return;
+    }
+
+    if (editingId !== null) {
+      movies = movies.map(movie =>
+        movie.id === editingId ? { ...movie, ...movieData } : movie
+      );
+    } else {
+      movies.push({
+        ...movieData,
+        id: `movie-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+        color: "#31465a"
+      });
+    }
+
+    search.value = "";
+    filter.value = "";
+    saveMovies();
+    closeMovieEditor();
+  };
+  addButton.onclick = () => openForm();
+  cancelButton.onclick = closeMovieEditor;
+  search.oninput = renderMovies;
+  filter.onchange = renderMovies;
+
+  renderMovies();
+}
+// Khởi tạo khi HTML đã tải xong.
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initMoviesPage);
+} else {
+  initMoviesPage();
+}
+
+// GENRES
+function initGenresPage() {
+  const page = document.getElementById("genresPage");
+
+  // Chỉ chạy trên trang thể loại
+  if (!page) return;
+
+  const tbody = document.getElementById("genresTable");
+  const search = document.getElementById("genreSearch");
+  const list = document.getElementById("genresList");
+  const editor = document.getElementById("genreEditor");
+  const form = document.getElementById("genreForm");
+  const nameInput = document.getElementById("genreName");
+  const descriptionInput = document.getElementById("genreDescription");
+  const formTitle = document.getElementById("genreFormTitle");
+  const saveButton = document.getElementById("saveGenre");
+  const notice = document.getElementById("genreNotice");
+
+  // Không lưu localStorage: F5 sẽ khôi phục danh sách này
+  let defaultGenres = [
+    {
+      id: 1,
+      name: "Hoạt hình",
+      description: "Phim hoạt hình cho mọi lứa tuổi"
+    },
+    {
+      id: 2,
+      name: "Chính kịch",
+      description: "Phim chính kịch nghiêm túc"
+    },
+    {
+      id: 3,
+      name: "Phiêu lưu",
+      description: "Phim phiêu lưu mạo hiểm"
+    },
+    {
+      id: 4,
+      name: "Khoa học viễn tưởng",
+      description: "Phim khoa học viễn tưởng"
+    },
+    {
+      id: 5,
+      name: "Kinh dị",
+      description: "Phim kinh dị, giật gân"
+    },
+    {
+      id: 6,
+      name: "Hài",
+      description: "Phim hài kịch giải trí",
+    },
+    {
+      id: 7,
+      name: "Tình cảm",
+      description: "Phim tình cảm, lãng mạn"
+    },
+    {
+      id: 8,
+      name: "Hành động",
+      description: "Phim hành động"
+    }
+  ];
+  let genres = JSON.parse(sessionStorage.getItem("btl-genres")) ?? defaultGenres;
+  function saveGenres() {
+    sessionStorage.setItem("btl-genres", JSON.stringify(genres));
+}
+
+  let editingId = null;
+  let nextId = Math.max(8, ...genres.map(genre => genre.id)) + 1;
+
+  function renderGenres() {
+    tbody.replaceChildren();
+
+    const keyword = search.value.trim().toLocaleLowerCase("vi");
+
+    const results = genres.filter(genre =>
+      genre.name.toLocaleLowerCase("vi").includes(keyword)
+    );
+
+    if (results.length === 0) {
+      const row = document.createElement("tr");
+      const cell = document.createElement("td");
+
+      cell.colSpan = 4;
+      cell.className = "empty";
+      cell.textContent = "Không tìm thấy thể loại.";
+
+      row.append(cell);
+      tbody.append(row);
+      return;
+    }
+
+    results.forEach(genre => {
+      const row = document.createElement("tr");
+
+      const idCell = document.createElement("td");
+      idCell.textContent = genre.id;
+
+      const nameCell = document.createElement("td");
+      nameCell.className = "genre-name";
+      nameCell.textContent = genre.name;
+
+      const descriptionCell = document.createElement("td");
+      descriptionCell.textContent = genre.description;
+
+      const actionsCell = document.createElement("td");
+      actionsCell.className = "actions";
+
+      const editButton = document.createElement("button");
+      editButton.type = "button";
+      editButton.className = "edit";
+      editButton.setAttribute("aria-label", `Sửa ${genre.name}`);
+
+      const editIcon = document.createElement("i");
+      editIcon.className = "bi bi-pencil-square";
+      editButton.append(editIcon);
+
+      editButton.onclick = () => openEditor(genre);
+
+      const deleteButton = document.createElement("button");
+      deleteButton.type = "button";
+      deleteButton.className = "delete";
+      deleteButton.setAttribute("aria-label", `Xóa ${genre.name}`);
+
+      const deleteIcon = document.createElement("i");
+      deleteIcon.className = "bi bi-trash-fill";
+      deleteButton.append(deleteIcon);
+
+      deleteButton.onclick = () => {
+        if (!confirm(`Xóa thể loại "${genre.name}"?`)) return;
+
+        genres = genres.filter(item => item.id !== genre.id);
+        saveGenres();
+        renderGenres();
+        notice.textContent = "Xóa thể loại thành công!";
+      };
+
+      actionsCell.append(editButton, deleteButton);
+      row.append(idCell, nameCell, descriptionCell, actionsCell);
+      tbody.append(row);
+    });
+  }
+
+  function openEditor(genre = null) {
+    form.reset();
+    notice.textContent = "";
+    editingId = genre ? genre.id : null;
+
+    formTitle.textContent = genre ? "Sửa thể loại" : "Thêm thể loại";
+    saveButton.textContent = genre ? "Cập nhật" : "Thêm mới";
+
+    if (genre) {
+      nameInput.value = genre.name;
+      descriptionInput.value = genre.description;
+    }
+
+    list.hidden = true;
+    editor.hidden = false;
+    nameInput.focus();
+  }
+
+  function closeEditor() {
+    editor.hidden = true;
+    list.hidden = false;
+    editingId = null;
+  }
+
+  document.getElementById("addGenre").onclick = () => openEditor();
+
+  document.getElementById("cancelGenre").onclick = () => {
+    closeEditor();
+    notice.textContent = "";
+  };
+
+  search.oninput = renderGenres;
+
+  form.onsubmit = event => {
+    event.preventDefault();
+
+    const name = nameInput.value.trim();
+    const description = descriptionInput.value.trim();
+
+    if (!name) {
+      nameInput.setCustomValidity("Vui lòng nhập tên thể loại.");
+      nameInput.reportValidity();
+      return;
+    }
+
+    const duplicate = genres.some(genre =>
+      genre.id !== editingId &&
+      genre.name.toLocaleLowerCase("vi") === name.toLocaleLowerCase("vi")
+    );
+
+    if (duplicate) {
+      nameInput.setCustomValidity("Tên thể loại đã tồn tại.");
+      nameInput.reportValidity();
+      return;
+    }
+
+    const isEditing = editingId !== null;
+
+    if (isEditing) {
+      genres = genres.map(genre =>
+        genre.id === editingId
+          ? { ...genre, name, description }
+          : genre
+      );
+    } else {
+      genres.unshift({
+        id: nextId++,
+        name,
+        description
+      });
+    }
+    saveGenres();
+    // Hiện lại toàn bộ danh sách sau khi lưu
+    search.value = "";
+    renderGenres();
+    closeEditor();
+
+    notice.textContent = isEditing
+      ? "Cập nhật thể loại thành công!"
+      : "Thêm thể loại thành công!";
+  };
+
+  nameInput.oninput = () => {
+    nameInput.setCustomValidity("");
+  };
+
+  renderGenres();
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initGenresPage);
+} else {
+  initGenresPage();
+}
