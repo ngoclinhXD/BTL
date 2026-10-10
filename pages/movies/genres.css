@@ -60,15 +60,14 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   border-radius: 5px;
 }
 
-#mainContent .primary,.primary {
+#mainContent .primary{
   padding: 14px 22px;
   background: #d32f2f;
   color: white;
   font-weight: 600;
 }
 
-#mainContent .primary:hover,
-.primary:hover {
+#mainContent .primary:hover {
   background: #d32f2f;
 }
 
@@ -248,12 +247,10 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   background: white;
   color: #344454;
   font: inherit;
-}
-
-#genreForm textarea {
   min-height: 120px;
   resize: vertical;
 }
+
 
 #genreForm input:focus,
 #genreForm textarea:focus {
