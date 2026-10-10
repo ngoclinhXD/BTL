@@ -61,35 +61,5 @@ function init() {
   };
 }
 
-window.pages = window.pages || {};
-window.pages.booking = {
-  init,
-  html: `<section class="booking-page">
-    <header class="booking-header">
-      <h1>Quản lý đặt vé</h1>
-      <div class="booking-header-actions">
-        <label class="booking-search">
-          <i class="bi bi-search" aria-hidden="true"></i>
-          <input id="bookingSearch" aria-label="Tìm đặt vé" type="search" placeholder="Tìm mã vé, khách hàng, phim…" autocomplete="off">
-        </label>
-        <button id="bookingAddBtn" class="btn-add-booking" type="button">
-          <i class="bi bi-plus-lg" aria-hidden="true"></i> Đặt vé
-        </button>
-      </div>
-    </header>
-    <div class="table-wrap">
-      <table>
-        <thead><tr>
-          <th scope="col">Mã đặt vé</th><th scope="col">Khách hàng</th>
-          <th scope="col">Phim</th><th scope="col">Rạp / Phòng</th>
-          <th scope="col">Suất chiếu</th><th scope="col">Số ghế</th>
-          <th scope="col">Tổng tiền</th><th scope="col">Trạng thái vé</th>
-          <th scope="col">Thanh toán</th>
-        </tr></thead>
-        <tbody id="bookingRows"></tbody>
-      </table>
-      <p class="empty-state" id="bookingEmpty" hidden>Không tìm thấy đặt vé phù hợp.</p>
-    </div>
-  </section>`
-};
+init();
 })();
