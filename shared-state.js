@@ -1,10 +1,15 @@
 (() => {
+  const navigation = performance.getEntriesByType('navigation')[0];
+  if (window === window.top && navigation?.type === 'reload') {
+    ['btl-movies', 'btl-screenings', 'btl-bookings', 'btl-genres'].forEach(key => sessionStorage.removeItem(key));
+  }
+
   const defaultMovies = [
     {
       id: 1,
       poster: "images/Muado.jpg",
       title: "Mưa đỏ",
-      subtitle: "mua do",
+      subtitle: "Red Rain",
       genres: ["Chính kịch", "Hành động", "Phiêu lưu", "Tình cảm"],
       duration: 150,
       date: "2025-11-20",
@@ -27,8 +32,8 @@
     {
       id: 3,
       poster: "images/nowayhome.jpg",
-      title: "Spider-Man: No Way Home",
-      subtitle: "Người Nhện",
+      title: "Người Nhện: Không Còn Nhà",
+      subtitle: "Spider-Man: No Way Home",
       genres: ["Hành động", "Khoa học viễn tưởng"],
       duration: 148,
       date: "2025-12-17",
@@ -39,8 +44,8 @@
     {
       id: 4,
       poster: "images/Avengers_ Endgame Encore.jpg",
-      title: "Avengers: Endgame Encore",
-      subtitle: "Biệt Đội Siêu Anh Hùng: Hồi Kết - Phiên bản đặc biệt(Chiếu lại)",
+      title: "Biệt Đội Siêu Anh Hùng: Hồi Kết - Phiên bản đặc biệt",
+      subtitle: "Avengers: Endgame - Special Edition",
       genres: ["Hành động", "Khoa học viễn tưởng", "Phiêu lưu"],
       duration: 183,
       date: "2026-09-25",
@@ -88,13 +93,9 @@
     return value;
   }
   function movieStatus(movie, date = today()) {
-    const shows = window.cinemaState.screenings.filter(show => String(show.movieId) === String(movie.id));
-    if (shows.length) {
-      if (shows.some(show => show.date === date)) return 'showing';
-      return shows.some(show => show.date > date) ? 'soon' : 'ended';
-    }
     if (movie.date > date) return 'soon';
-    return 'ended';
+    const daysSinceRelease = (Date.parse(date) - Date.parse(movie.date)) / 86400000;
+    return daysSinceRelease <= 21 ? 'showing' : 'ended';
   }
   window.cinemaState = {
     theaters, today, movieStatus,
@@ -127,7 +128,6 @@
     });
     return overlaps ? 'Phòng đã có suất chiếu trùng thời gian.' : '';
   };
-  // shortcut: this demo uses sessionStorage; use a backend for durable multi-user data.
   window.movieState = {
     get movies() { return window.cinemaState.movies; },
     getMovies() { return this.movies; },

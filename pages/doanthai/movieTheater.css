@@ -1,5 +1,16 @@
 .modal a { color: #0866b3; text-decoration: underline; }
 
+#mainContent > section > h2 {
+    display: flex;
+    align-items: end;
+    min-height: 42px;
+    margin: 4px 0 24px;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.2;
+}
+
 article
 {
     background-color: var(--sidebar-bg);
@@ -12,8 +23,15 @@ article
 article#searchBar
 {
     display: flex;
-    margin: 20px 0;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 0 0 20px;
 }
+
+#searchBar #searchInput { flex: 1 1 260px; min-width: 0; }
+#searchBar label { white-space: nowrap; }
+#searchBar #theaterShowDate { width: auto; flex: 0 0 auto; color: var(--text-primary); }
 
 article.rooms-modal
 {

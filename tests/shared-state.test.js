@@ -4,9 +4,11 @@ const vm = require('node:vm');
 const values = new Map();
 const context = {
   window: {},
+  performance: { getEntriesByType: () => [{ type: 'navigate' }] },
   sessionStorage: {
     getItem: key => values.get(key) ?? null,
-    setItem: (key, value) => values.set(key, value)
+    setItem: (key, value) => values.set(key, value),
+    removeItem: key => values.delete(key)
   }
 };
 vm.createContext(context);
@@ -18,12 +20,17 @@ assert.equal(state.bookings.length, 9);
 const movie = { id: 'test', title: 'Test', duration: 120, date: '2026-10-01', endDate: '2026-11-01', status: 'showing' };
 state.saveMovies([movie]);
 const show = { id: 'show-test', movieId: 'test', theaterId: '1', room: 1, date: '2026-10-11', time: '23:00', price: 75000 };
-assert.equal(state.movieStatus(movie, '2026-10-11'), 'ended');
+assert.equal(state.movieStatus(movie, '2026-10-11'), 'showing');
 assert.equal(state.screeningError(show), '');
 state.saveScreenings([show]);
-assert.equal(state.movieStatus(movie, '2026-10-10'), 'soon');
+assert.equal(state.movieStatus(movie, '2026-09-30'), 'soon');
+assert.equal(state.movieStatus(movie, '2026-10-01'), 'showing');
+assert.equal(state.movieStatus(movie, '2026-10-22'), 'showing');
+assert.equal(state.movieStatus(movie, '2026-10-23'), 'ended');
+assert.equal(state.movieStatus({ ...movie, date: '2026-09-25' }, '2026-10-16'), 'showing');
+assert.equal(state.movieStatus({ ...movie, date: '2026-09-25' }, '2026-10-17'), 'ended');
 assert.equal(state.movieStatus(movie, '2026-10-11'), 'showing');
-assert.equal(state.movieStatus(movie, '2026-10-12'), 'ended');
+assert.equal(state.movieStatus(movie, '2026-10-12'), 'showing');
 assert.equal(state.screeningError(show), '');
 assert.ok(state.screeningError({ ...show, id: 'second', time: '23:30' }));
 assert.ok(state.screeningError({ ...show, id: 'second', date: '2026-10-12', time: '00:30' }));
@@ -43,4 +50,23 @@ state.saveScreenings([show]);
 vm.runInContext(source, context);
 assert.equal(context.window.cinemaState.movies[0].title, 'Test');
 assert.equal(context.window.cinemaState.screenings[0].id, 'show-test');
-console.log('Shared-state checks passed: status by date, overlap across midnight, validation, and persistence.');
+const resetKeys = ['btl-movies', 'btl-screenings', 'btl-bookings', 'btl-genres'];
+resetKeys.forEach(key => values.set(key, '[]'));
+values.set('login', 'true');
+vm.runInContext(source, context);
+resetKeys.forEach(key => assert.equal(values.get(key), '[]'));
+context.window.top = context.window;
+vm.runInContext(source, context);
+resetKeys.forEach(key => assert.equal(values.get(key), '[]'));
+context.performance.getEntriesByType = () => [{ type: 'reload' }];
+context.window.top = {};
+vm.runInContext(source, context);
+resetKeys.forEach(key => assert.equal(values.get(key), '[]'));
+context.window.top = context.window;
+vm.runInContext(source, context);
+resetKeys.forEach(key => assert.equal(values.has(key), false));
+assert.equal(values.get('login'), 'true');
+assert.equal(context.window.cinemaState.movies.length, 5);
+assert.equal(context.window.cinemaState.bookings.length, 9);
+assert.equal(context.window.cinemaState.screenings.length, 0);
+console.log('Shared-state checks passed, including top-level reset and iframe persistence.');
