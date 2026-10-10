@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="styles.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="application-shell login-screen">
 
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-logo">
@@ -22,7 +22,7 @@
   </div>
 
   <nav class="sidebar-nav">
-    <a class="nav-item" href="/home" data-page="home" id="nav-dashboard">
+    <a class="nav-item" href="#home" data-page="home" id="nav-dashboard">
       <i class="bi bi-grid-1x2 nav-icon"></i>
       <span class="nav-label">Tổng quan</span>
     </a>
@@ -42,11 +42,11 @@
       <i class="bi bi-building nav-icon"></i>
       <span class="nav-label">Rạp chiếu</span>
     </a>
-    <a class="nav-item" href="/products" data-page="products" id="nav-products">
+    <a class="nav-item" href="#products" data-page="products" id="nav-products">
       <i class="bi bi-bag nav-icon"></i>
       <span class="nav-label">Sản phẩm</span>
     </a>
-    <a class="nav-item" href="/booking" data-page="booking" id="nav-bookings">
+    <a class="nav-item" href="#booking" data-page="booking" id="nav-bookings">
       <i class="bi bi-ticket-perforated nav-icon"></i>
       <span class="nav-label">Đặt vé</span>
     </a>
@@ -64,13 +64,11 @@
 </aside>
 
 <div class="main-wrapper">
-  <main class="content" id="content" aria-live="polite"></main>
+  <main class="content" id="content">
+    <iframe id="pageFrame" title="Quản lý đặt vé"></iframe>
+  </main>
 </div>
 
-<script src="pages/booking/booking.js"></script>
-<script src="app.js"></script>
-
-<script src="pages/products/products.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

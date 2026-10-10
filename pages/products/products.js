@@ -1,7 +1,4 @@
-window.pages = window.pages || {};
-
-window.pages['products'] = {
-    html: '', 
+window.productPage = {
     init: function() {
         // Mock data ban đầu
         this.data = [
@@ -171,3 +168,5 @@ window.pages['products'] = {
         }
     }
 };
+
+window.productPage.init();
