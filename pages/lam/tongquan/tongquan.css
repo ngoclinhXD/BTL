@@ -16,6 +16,8 @@ body {
 }
 
 .stat-card {
+    text-decoration: none;
+    color: inherit;
     background-color: #ffffff;
     border: 1px solid #e0e0e0;
     border-left: none;
@@ -26,6 +28,23 @@ body {
     min-width: 200px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
+
+.overview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+.overview-header h1 { margin: 0; font-size: 28px; font-weight: 700; color: #333333; }
+.overview-header h1 span { color: #d32f2f; }
+.overview-header time {
+    font: inherit;
+    font-weight: 700;
+    color: #333333;
+}
+a.stat-card:hover, a.stat-card:focus-visible { outline: 2px solid #d32f2f; outline-offset: 2px; }
 
 .stat-icon {
     font-size: 32px;

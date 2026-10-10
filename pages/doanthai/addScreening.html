@@ -9,51 +9,53 @@
   <link rel="stylesheet" href="addScreening.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="embedded">
     <main class="content" id="mainContent">
     <!-- nội dung trang ở đây -->
      <section>
           <article>
+            <form id="screeningForm">
             <div>
                 <h2>Thêm suất chiếu mới</h2>
             </div>
             <div>
-                <label>Phim:</label>
-                <select id="movieSelect">
+                <label for="movieSelect">Phim:</label>
+                <select id="movieSelect" required>
                     <option value="">Chọn phim</option>
                 </select>
             </div>
             <div>
-                <label>Rạp chiếu:</label>
-                <select id="theaterSelect">
+                <label for="theaterSelect">Rạp chiếu:</label>
+                <select id="theaterSelect" required>
                     <option value="">Chọn rạp</option>
                 </select>
             </div>
-                <label>Phòng chiếu:</label>
-                <select id="roomSelect">
+                <label for="roomSelect">Phòng chiếu:</label>
+                <select id="roomSelect" required>
                     <option value="">Chọn phòng</option>
                 </select>
-            <div>
             <div class="input">
-                <label>Ngày chiếu:</label>
-                <input type="date" id="showDate">
+                <label for="showDate">Ngày chiếu:</label>
+                <input type="date" id="showDate" required>
             </div>
             <div class="input">
-                <label>Giờ chiếu:</label>
-                <input type="time" id="showTime">
+                <label for="showTime">Giờ chiếu:</label>
+                <input type="time" id="showTime" required>
             </div>
             <div class="input">    
-                <label>Giá vé:</label>
-                <input type="number" id="ticketPrice" placeholder="Nhập giá vé">
+                <label for="ticketPrice">Giá vé:</label>
+                <input type="number" id="ticketPrice" placeholder="Nhập giá vé" min="0" step="1000" required>
             </div>
             <div>
                 <button type="submit" id="movieSubmit">Tạo mới</button>
-                <button type="reset" id="movieReset">Hủy</button>
+                <button type="button" id="movieReset">Hủy</button>
             </div>
+            </form>
           </article>
      </section>
     </main>
 
+<script src="../../shared-state.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

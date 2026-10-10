@@ -2,6 +2,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const sidebar = document.getElementById("sidebar");
   const toggle = document.getElementById("sidebarToggle");
 
+  if (!sidebar || !toggle) return;
+
   document.body.classList.add("sidebar-collapsed");
 
   toggle.addEventListener("mouseenter", () => {
@@ -12,13 +14,6 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.classList.add("sidebar-collapsed");
   });
 });
-//F5 mới load lại
-const navigation = performance.getEntriesByType("navigation")[0];
-
-if (navigation?.type === "reload") {
-  sessionStorage.removeItem("btl-movies");
-  sessionStorage.removeItem("btl-genres");
-}
 // MOVIES
 
 
@@ -40,68 +35,6 @@ function initMoviesPage() {
   }
 
 
-  const defaultMovies = [
-    {
-      id: 1,
-      poster: "images/Muado.jpg",
-      title: "Mưa đỏ",
-      subtitle: "mua do",
-      genres: ["Chính kịch", "Hành động", "Phiêu lưu", "Tình cảm"],
-      duration: 150,
-      date: "2025-11-20",
-      status: "ended",
-      rating: 8.0,
-      color: "#9e2b27"
-    },
-    {
-      id: 2,
-      poster: "images/Dune.jpeg",
-      title: "Dune",
-      subtitle: "Dune",
-      genres: ["Chính kịch", "Khoa học viễn tưởng", "Phiêu lưu"],
-      duration: 155,
-      date: "2025-11-17",
-      status: "ended",
-      rating: 8.5,
-      color: "#a77b51"
-    },
-    {
-      id: 3,
-      poster: "images/nowayhome.jpg",
-      title: "Spider-Man: No Way Home",
-      subtitle: "Người Nhện",
-      genres: ["Hành động", "Khoa học viễn tưởng"],
-      duration: 148,
-      date: "2025-12-17",
-      status: "showing",
-      rating: 9.5,
-      color: "#554074"
-    },
-    {
-      id: 4,
-      poster: "images/Avengers_ Endgame Encore.jpg",
-      title: "Avengers: Endgame Encore",
-      subtitle: "Biệt Đội Siêu Anh Hùng: Hồi Kết - Phiên bản đặc biệt(Chiếu lại)",
-      genres: ["Hành động", "Khoa học viễn tưởng", "Phiêu lưu"],
-      duration: 183,
-      date: "2026-09-25",
-      status: "showing",
-      rating: 8.5,
-      color: "#256372"
-    },
-    {
-      id: 5,
-      poster: "images/Shaunthesheep.jpg",
-      title: "Shaun The Sheep",
-      subtitle: "Quái lạ ghé nhà",
-      genres: ["Hoạt hình", "Hài", "Phiêu lưu"],
-      duration: 81,
-      date: "2026-10-16",
-      status: "soon",
-      rating: 0.0,
-      color: "#363636"
-    }
-  ];
 
   const statusLabels = {
     showing: "ĐANG CHIẾU",
@@ -109,7 +42,7 @@ function initMoviesPage() {
     ended: "NGỪNG CHIẾU"
   };
 
-  let movies = JSON.parse(sessionStorage.getItem("btl-movies")) ?? defaultMovies;
+  let movies = cinemaState.movies;
   let editingId = null;
 
 
@@ -128,7 +61,7 @@ function initMoviesPage() {
   }
 
   function saveMovies() {
-    sessionStorage.setItem("btl-movies", JSON.stringify(movies));
+    cinemaState.saveMovies(movies);
     renderMovies();
     }
 
@@ -143,7 +76,7 @@ function initMoviesPage() {
         .includes(keyword);
 
       const matchesStatus =
-        filter.value === "" || movie.status === filter.value;
+        filter.value === "" || cinemaState.movieStatus(movie) === filter.value;
 
       return matchesSearch && matchesStatus;
     });
@@ -200,11 +133,16 @@ cells[0].append(poster);
 
       // Thời lượng và ngày khởi chiếu
       cells[3].textContent = `${movie.duration} phút`;
-      cells[4].textContent = movie.date.split("-").reverse().join("/");
+      const screeningLink = createElement("a", movie.date.split("-").reverse().join("/"));
+      screeningLink.href = "../../index.html#showtimes?" + new URLSearchParams({
+        date: movie.date, movieId: String(movie.id)
+      });
+      screeningLink.target = "_top";
+      cells[4].append(screeningLink);
 
       // Trạng thái
       cells[5].append(
-        createElement("span", statusLabels[movie.status],`status ${movie.status}`));
+        createElement("span", statusLabels[cinemaState.movieStatus(movie)],`status ${cinemaState.movieStatus(movie)}`));
 
       // Đánh giá
       cells[6].className = "rating";
@@ -233,6 +171,10 @@ cells[0].append(poster);
       );
 
       deleteButton.onclick = () => {
+        if (cinemaState.screenings.some(show => show.movieId === String(movie.id))) {
+          alert("Phim đang có suất chiếu. Hãy xóa suất chiếu trước khi xóa phim.");
+          return;
+        }
         if (confirm(`Bạn muốn xóa phim "${movie.title}"?`)) {
           movies = movies.filter(item => item.id !== movie.id);
           saveMovies();
@@ -372,6 +314,7 @@ cells[0].append(poster);
       names.forEach(name => {
         form.elements.namedItem(name).value = movie[name] ?? "";
       });
+      form.elements.namedItem("status").value = cinemaState.movieStatus(movie);
     }
 
     genreOptions.querySelectorAll("input").forEach(input => {
@@ -413,7 +356,7 @@ cells[0].append(poster);
       age: String(fields.get("age") || ""),
       language: String(fields.get("language") || "").trim(),
       subtitles: String(fields.get("subtitles") || "").trim(),
-      status: String(fields.get("status") || ""),
+      status: form.elements.namedItem("status").value,
       genres: fields.getAll("genres"),
       poster: currentPoster
     };
@@ -437,9 +380,15 @@ cells[0].append(poster);
     }
 
     if (editingId !== null) {
-      movies = movies.map(movie =>
+      const updatedMovies = movies.map(movie =>
         movie.id === editingId ? { ...movie, ...movieData } : movie
       );
+      const invalidShow = cinemaState.screenings.find(show => cinemaState.screeningError(show, updatedMovies));
+      if (invalidShow) {
+        alert("Thay đổi này không phù hợp với suất chiếu đã lưu: " + cinemaState.screeningError(invalidShow, updatedMovies));
+        return;
+      }
+      movies = updatedMovies;
     } else {
       movies.push({
         ...movieData,

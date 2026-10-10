@@ -1,3 +1,5 @@
+.modal a { color: #0866b3; text-decoration: underline; }
+
 article
 {
     background-color: var(--sidebar-bg);

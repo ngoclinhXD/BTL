@@ -9,36 +9,41 @@
 </head>
 <body>
 
+    <main>
+    <header class="overview-header">
+        <h1>Xin chào, <span>Quản trị viên.</span></h1>
+        <time id="overviewDate" aria-label="Ngày và giờ hiện tại"></time>
+    </header>
     <div class="stats-container">
-        <div class="stat-card">
+        <a class="stat-card" href="../../../index.html#movies" target="_top">
             <div class="stat-icon">
                 <i class="fa-solid fa-film"></i>
             </div>
             <div class="stat-content">
                 <span class="stat-title">Tổng số phim</span>
-                <span class="stat-number">4</span>
+                <span class="stat-number" id="totalMovies">0</span>
             </div>
-        </div>
+        </a>
 
-        <div class="stat-card">
+        <a class="stat-card" id="showingLink" href="../../../index.html#theaters" target="_top">
             <div class="stat-icon">
                 <i class="fa-solid fa-ticket"></i>
             </div>
             <div class="stat-content">
                 <span class="stat-title">Đang chiếu</span>
-                <span class="stat-number">3</span>
+                <span class="stat-number" id="showingMovies">0</span>
             </div>
-        </div>
+        </a>
 
-        <div class="stat-card">
+        <a class="stat-card" href="../../../index.html#booking" target="_top">
             <div class="stat-icon">
                 <i class="fa-solid fa-credit-card"></i>
             </div>
             <div class="stat-content">
                 <span class="stat-title">Tổng đặt vé</span>
-                <span class="stat-number">0</span>
+                <span class="stat-number" id="totalBookings">0</span>
             </div>
-        </div>
+        </a>
 
         <div class="stat-card">
             <div class="stat-icon">
@@ -50,6 +55,9 @@
             </div>
         </div>
     </div>
+    </main>
+    <script src="../../../shared-state.js"></script>
+    <script src="tongquan.js"></script>
 
 </body>
 </html>

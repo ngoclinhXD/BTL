@@ -3,11 +3,14 @@
   const content = frame.parentElement;
   const routes = {
     home: 'pages/lam/tongquan/index.html',
+    movies: 'pages/movies/movies.html',
+    genres: 'pages/movies/genres.html',
+    showtimes: 'pages/doanthai/index.html',
+    theaters: 'pages/doanthai/movieTheater.html',
     booking: 'pages/booking/booking.html',
     products: 'pages/products/products.html'
   };
-  const pageTitles = { login: 'Đăng nhập', home: 'Tổng quan', booking: 'Quản lý đặt vé', products: 'Quản lý Sản phẩm' };
-  const appState = { movies: [] };
+  const pageTitles = { login: 'Đăng nhập', home: 'Tổng quan', movies: 'Quản lý phim', genres: 'Quản lý thể loại', showtimes: 'Quản lý suất chiếu', theaters: 'Quản lý rạp chiếu', booking: 'Quản lý đặt vé', products: 'Quản lý Sản phẩm' };
   const loginKey = 'btl.loggedIn';
   let loggedIn;
   try {
@@ -19,17 +22,18 @@
   let currentPage;
 
   function loadPage() {
-    const hash = window.location.hash.slice(1);
+    const [hash, query = ''] = window.location.hash.slice(1).split('?');
     const page = loggedIn ? (Object.hasOwn(routes, hash) ? hash : 'home') : 'login';
     if (hash !== page) window.location.replace(`${window.location.href.split('#')[0]}#${page}`);
     document.body.classList.toggle('login-screen', !loggedIn);
-    if (page !== currentPage) {
+    const pageKey = page + '?' + query;
+    if (pageKey !== currentPage) {
       // Recreate the browsing context so iframe navigation adds no extra Back/Forward steps.
       if (currentPage !== undefined) frame.remove();
       frame.title = pageTitles[page];
-      frame.src = page === 'login' ? 'pages/lam/login/index.html' : routes[page];
+      frame.src = page === 'login' ? 'pages/lam/login/index.html' : routes[page] + (query ? '?' + query : '');
       if (currentPage !== undefined) content.append(frame);
-      currentPage = page;
+      currentPage = pageKey;
     }
     document.querySelectorAll('.nav-item').forEach(item => {
       const active = item.dataset.page === page;
@@ -59,17 +63,21 @@
       loadPage();
       return;
     }
+    if (message.type === 'NAVIGATE' && Object.hasOwn(routes, message.page)) {
+      window.location.hash = message.page + (typeof message.query === 'string' ? '?' + message.query : '');
+      return;
+    }
     if (message.type === 'ADD_MOVIE') {
       const movie = message.movie;
       if (!movie || typeof movie !== 'object' || Array.isArray(movie) ||
           typeof movie.title !== 'string' || !movie.title.trim() ||
           (movie.id !== undefined && typeof movie.id !== 'string' &&
             !(typeof movie.id === 'number' && Number.isFinite(movie.id)))) return;
-      appState.movies.push(movie.id === undefined ? { title: movie.title } : { id: movie.id, title: movie.title });
+      cinemaState.saveMovies([...cinemaState.movies, movie.id === undefined ? { title: movie.title } : { id: movie.id, title: movie.title }]);
     } else if (message.type !== 'GET_MOVIES') return;
 
     // file:// origins may be opaque, so validate the source and use '*' to reply.
-    frame.contentWindow.postMessage({ type: 'MOVIES_DATA', movies: appState.movies }, '*');
+    frame.contentWindow.postMessage({ type: 'MOVIES_DATA', movies: cinemaState.movies }, '*');
   });
 
   document.getElementById('sidebarToggle').addEventListener('click', () => {
@@ -77,7 +85,6 @@
   });
   document.getElementById('btnLogout').addEventListener('click', () => {
     loggedIn = false;
-    appState.movies = [];
     try {
       window.sessionStorage.removeItem(loginKey);
     } catch {
