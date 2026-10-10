@@ -1,0 +1,139 @@
+article
+{
+    background-color: var(--sidebar-bg);
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-sidebar);
+}
+
+article#searchBar
+{
+    display: flex;
+    margin: 20px 0;
+}
+
+article.rooms-modal
+{
+  box-shadow: none;
+  margin: 10px 0;
+}
+
+input
+{
+    display: block;
+    width: 30%;
+    padding: 5px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text-muted);
+    min-width: 50px;
+}
+
+table
+{
+    text-align: left;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+thead.modal-header
+{
+  width: 100%;
+  border-bottom: 1px solid black
+}
+
+th, td
+{
+    padding: 8px 10px;
+}
+
+.status-select {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: bold;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  text-align: center;
+  appearance: none;
+  min-width: 144px;
+}
+
+/* 1. Trạng thái Hoạt động (Màu xanh) */
+.status-select.status-active {
+  background-color: #d1e7dd;
+  color: #0f5132;
+}
+
+/* 2. Trạng thái Bảo trì (Màu vàng/cam) */
+.status-select.status-maintenance {
+  background-color: #fff3cd;
+  color: #664d03;
+}
+
+/* 3. Trạng thái Không hoạt động (Màu đỏ) */
+.status-select.status-inactive {
+  background-color: #f8d7da;
+  color: #842029;
+}
+
+/* Màu nền cho các danh mục khi xổ danh sách xuống */
+.status-select option {
+  background-color: #ffffff;
+  color: #333333;
+}
+
+/*The modal background*/
+.modal
+{
+  display: none;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+/*Modal content box*/
+.modal-content
+{
+  background-color: #fefefe;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  border-radius: 8px;
+}
+
+/* The Close Button */
+.close {
+  color: #aaaaaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+span.theaterName
+{
+  cursor: pointer;
+  font-weight: bold;
+}
+
+span.theaterName:hover
+{
+  text-decoration: underline;
+}
