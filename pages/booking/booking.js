@@ -1,5 +1,9 @@
 (() => {
-const bookings = cinemaState.bookings;
+const showtimeKey = ({ showtime }) => {
+  const [date, time] = showtime.split(' · ');
+  return date.split('/').reverse().join('-') + ' ' + time;
+};
+const bookings = [...cinemaState.bookings].sort((a, b) => showtimeKey(b).localeCompare(showtimeKey(a)));
 
 const money = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' });
 const statusClass = value => value.startsWith('Đã') ? 'status-success' : value.startsWith('Chờ') ? 'status-warning' : 'status-muted';
