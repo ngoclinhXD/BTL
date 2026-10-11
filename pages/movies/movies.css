@@ -163,6 +163,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 }
 
 #mainContent .title {
+  font-size: 16px;
   color: #222;
   font-weight: 700;
 }
