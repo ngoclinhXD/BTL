@@ -503,6 +503,7 @@ function initGenresPage() {
     const results = genres.filter(genre =>
       genre.name.toLocaleLowerCase("vi").includes(keyword)
     );
+    results.sort((a, b) => a.id - b.id);
 
     if (results.length === 0) {
       const row = document.createElement("tr");
