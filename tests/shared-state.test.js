@@ -15,8 +15,33 @@ vm.createContext(context);
 const source = fs.readFileSync(require('node:path').join(__dirname, '../shared-state.js'), 'utf8');
 vm.runInContext(source, context);
 const state = context.window.cinemaState;
-assert.equal(state.movies.length, 5);
+assert.equal(state.movies.length, 13);
 assert.equal(state.bookings.length, 9);
+// Vietnam theatrical releases; showtimes remain demo data.
+const releaseDates = new Map([
+  ['Spider-Man: No Way Home', '2021-12-17'],
+  ['Khóa chặt cửa nào Suzume', '2026-10-02'], // Vietnam rerelease.
+  ['Chiikawa: Bí mật đảo người cá', '2026-08-28'],
+  ['Kung Fu Panda 4', '2024-03-08'],
+  ['Pháo hoa lúc bình minh', '2026-09-25'],
+  ['Những mảnh ghép cảm xúc 2', '2024-06-14'],
+  ['Kẻ trộm mặt trăng 4', '2024-07-05'],
+  ['Marnie yêu dấu', '2026-09-18']
+]);
+for (const booking of state.bookings) {
+  const [day, month, year] = booking.showtime.split(' · ')[0].split('/');
+  const date = `${year}-${month}-${day}`;
+  const release = releaseDates.get(booking.movie);
+  const film = state.movies.find(movie => movie.title === booking.movie);
+  assert.ok(film, `Booking movie missing from catalog: ${booking.movie}`);
+  assert.equal(film.date, release);
+  assert.ok(film.duration > 0 && film.genres.length > 0);
+  assert.ok(fs.existsSync(require('node:path').join(__dirname, '../pages/movies', film.poster)));
+  assert.ok(release, `Missing release date: ${booking.movie}`);
+  assert.ok(date >= release, `${booking.movie}: booking precedes release`);
+  assert.ok((Date.parse(date) - Date.parse(release)) / 86400000 <= 21,
+    `${booking.movie}: demo booking outside release period`);
+}
 const movie = { id: 'test', title: 'Test', duration: 120, date: '2026-10-01', endDate: '2026-11-01', status: 'showing' };
 state.saveMovies([movie]);
 const show = { id: 'show-test', movieId: 'test', theaterId: '1', room: 1, date: '2026-10-11', time: '23:00', price: 75000 };
@@ -66,7 +91,7 @@ context.window.top = context.window;
 vm.runInContext(source, context);
 resetKeys.forEach(key => assert.equal(values.has(key), false));
 assert.equal(values.get('login'), 'true');
-assert.equal(context.window.cinemaState.movies.length, 5);
+assert.equal(context.window.cinemaState.movies.length, 13);
 assert.equal(context.window.cinemaState.bookings.length, 9);
 assert.equal(context.window.cinemaState.screenings.length, 0);
 console.log('Shared-state checks passed, including top-level reset and iframe persistence.');
