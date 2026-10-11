@@ -10,7 +10,6 @@ function init() {
   const search = document.getElementById('bookingSearch');
   const rows = document.getElementById('bookingRows');
   const empty = document.getElementById('bookingEmpty');
-  const addBtn = document.getElementById('bookingAddBtn');
 
   function render(query = '') {
     const keyword = query.trim().toLocaleLowerCase('vi');
@@ -39,17 +38,14 @@ function init() {
     event.preventDefault();
     alert(`Chi tiết đặt vé ${link.dataset.bookingCode}`);
   };
-  const onAddClick = () => alert('Tạo đặt vé mới');
 
   search.addEventListener('input', onSearch);
   rows.addEventListener('click', onCodeClick);
-  addBtn.addEventListener('click', onAddClick);
   render();
 
   return () => {
     search.removeEventListener('input', onSearch);
     rows.removeEventListener('click', onCodeClick);
-    addBtn.removeEventListener('click', onAddClick);
   };
 }
 

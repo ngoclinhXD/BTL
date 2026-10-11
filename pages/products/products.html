@@ -8,6 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../styles.css">
   <link rel="stylesheet" href="./products.css">
+  <link rel="stylesheet" href="../../form-dialog.css">
 </head>
 <body class="iframe-page">
 <main class="content">
@@ -57,11 +58,11 @@
 </div>
 
 <!-- Modal Thêm/Sửa Sản phẩm -->
-<div id="product-modal" class="modal">
+<dialog id="product-modal" class="form-dialog" aria-labelledby="modal-title">
     <div class="modal-content">
         <div class="modal-header">
             <h3 id="modal-title">Thêm Sản phẩm mới</h3>
-            <span class="close" onclick="productPage.closeModal()">&times;</span>
+            <button type="button" class="close" aria-label="Đóng" onclick="productPage.closeModal()">&times;</button>
         </div>
         <div class="modal-body">
             <form id="product-form" onsubmit="productPage.saveProduct(event)">
@@ -110,9 +111,10 @@
             </form>
         </div>
     </div>
-</div>
+</dialog>
 </main>
 <script src="../../shared-state.js"></script>
 <script src="./products.js"></script>
+<script src="../../form-dialog.js"></script>
 </body>
 </html>

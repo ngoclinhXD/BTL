@@ -175,7 +175,8 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 
 .sidebar-collapsed .sidebar-logo { justify-content: center; gap: 0; }
 .sidebar-collapsed .logo-icon { display: none; }
-.sidebar-collapsed .sidebar-toggle { margin: 0 auto; width: 36px; height: 36px; }
+.sidebar-collapsed .sidebar-toggle { margin: 0 auto; width: 36px; height: 36px; background: var(--accent); color: white; font-size: 18px; box-shadow: var(--glow-red); }
+.sidebar-collapsed .sidebar-toggle:hover { background: var(--accent-hover); }
 
 .sidebar-collapsed .nav-item { justify-content: center; padding: 10px 0; gap: 0; }
 .sidebar-collapsed .nav-label { opacity: 0; max-width: 0; pointer-events: none; }
@@ -191,3 +192,12 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   .sidebar { transform: translateX(calc(-100% - var(--sidebar-gap) * 2)); transition: transform var(--transition-slow), width var(--transition-slow); }
   .main-wrapper { margin-left: 0 !important; }
 }
+
+.form-dialog-open::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.5);
+  z-index: 200;
+}
+.form-dialog-open .main-wrapper { position: relative; z-index: 201; }
