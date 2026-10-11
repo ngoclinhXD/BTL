@@ -461,6 +461,11 @@ function initGenresPage() {
       id: 8,
       name: "Hành động",
       description: "Phim hành động"
+    },
+    {
+      id: 9,
+      name: "Sinh tồn",
+      description: "Phim sinh tồn, kịch tính"
     }
   ];
   let genres = JSON.parse(sessionStorage.getItem("btl-genres")) ?? defaultGenres;

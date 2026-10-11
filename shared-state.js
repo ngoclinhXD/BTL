@@ -31,12 +31,12 @@
     },
     {
       id: 3,
-      poster: "images/nowayhome.jpg",
-      title: "Người Nhện: Không Còn Nhà",
-      subtitle: "Spider-Man: No Way Home",
-      genres: ["Hành động", "Khoa học viễn tưởng"],
-      duration: 148,
-      date: "2025-12-17",
+      poster: "images/traibuonnguoi.jpg",
+      title: "Trại Buôn Người",
+      subtitle: "The Journey of Heroes",
+      genres: ["Hành động", "Sinh Tồn"],
+      duration: 135,
+      date: "2026-09-25",
       status: "showing",
       rating: 9.5,
       color: "#554074"
