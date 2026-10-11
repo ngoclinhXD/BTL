@@ -94,8 +94,12 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>URL Hình ảnh (Tạm thời)</label>
-                    <input type="text" id="product-image" placeholder="https://link-anh.com/anh.jpg">
+                    <label for="product-image">Hình ảnh sản phẩm</label>
+                    <div id="product-image-drop" class="image-drop">
+                        <input type="file" id="product-image" accept="image/jpeg,image/png,image/gif" aria-describedby="product-image-help">
+                        <small id="product-image-help">Kéo thả ảnh vào đây hoặc chọn file. JPG, PNG hoặc GIF, tối đa 5MB.</small>
+                    </div>
+                    <img id="product-image-preview" class="product-img" alt="Ảnh sản phẩm xem trước" hidden>
                 </div>
                 <div class="form-group">
                     <label>Trạng thái</label>

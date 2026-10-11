@@ -70,12 +70,11 @@
 
       <div class="movie-grid two">
         <div>
-          <label>
-            Ảnh Poster
-            <input id="posterFile" type="file" accept="image/jpeg,image/png,image/gif">
-          </label>
-
-          <small>Chọn ảnh JPG, PNG hoặc GIF, tối đa 5MB.</small>
+          <label for="posterFile">Ảnh Poster</label>
+          <div id="posterDrop" class="image-drop">
+            <input id="posterFile" type="file" accept="image/jpeg,image/png,image/gif" aria-describedby="posterHelp">
+            <small id="posterHelp">Kéo thả ảnh vào đây hoặc chọn file. JPG, PNG hoặc GIF, tối đa 5MB.</small>
+          </div>
 
           <div id="posterPreviewBox" hidden>
             <img id="posterPreview" alt="Ảnh poster xem trước">

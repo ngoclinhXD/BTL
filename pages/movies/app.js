@@ -238,6 +238,25 @@ cells[0].append(poster);
     }
   }
 
+  const posterDrop = document.getElementById("posterDrop");
+  posterDrop.ondragover = event => {
+    event.preventDefault();
+    posterDrop.classList.add("is-dragging");
+  };
+  posterDrop.ondragleave = event => {
+    if (!posterDrop.contains(event.relatedTarget)) posterDrop.classList.remove("is-dragging");
+  };
+  posterDrop.ondrop = event => {
+    event.preventDefault();
+    posterDrop.classList.remove("is-dragging");
+    if (event.dataTransfer.files.length !== 1) {
+      alert("Chọn một ảnh mỗi lần.");
+      return;
+    }
+    posterFile.files = event.dataTransfer.files;
+    posterFile.onchange();
+  };
+
   posterFile.onchange = () => {
     const version = ++imageReadVersion;
     posterLoading = false;
