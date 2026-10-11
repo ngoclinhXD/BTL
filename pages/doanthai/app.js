@@ -1,5 +1,7 @@
 document.getElementById('movieReset')?.addEventListener('click', () => {
-  window.location.href = 'index.html' + window.location.search;
+  const editor = document.getElementById('screeningEditor');
+  if (editor) editor.close();
+  else window.location.href = 'index.html' + window.location.search;
 });
 
 document.querySelectorAll('.status-select').forEach(select => {
@@ -111,15 +113,21 @@ if (screeningRows) {
     renderScreenings();
   };
   document.getElementById('add').onclick = () => {
-    window.location.href = 'addScreening.html?' + new URLSearchParams({
-      date: date.value, movieId: movie.value, theaterId: theater.value
-    });
+    screeningForm.reset();
+    document.getElementById('movieSelect').value = movie.value;
+    document.getElementById('theaterSelect').value = theater.value;
+    document.getElementById('theaterSelect').dispatchEvent(new Event('change'));
+    document.getElementById('screeningDate').value = date.value || cinemaState.today();
+    document.getElementById('screeningEditor').showModal();
   };
   renderScreenings();
 }
 
 const screeningForm = document.getElementById('screeningForm');
 if (screeningForm) {
+  const editor = document.getElementById('screeningEditor');
+  const formDate = document.getElementById('screeningDate') || document.getElementById('showDate');
+  editor?.addEventListener('cancel', event => { event.preventDefault(); editor.close(); });
   const movie = document.getElementById('movieSelect');
   const theater = document.getElementById('theaterSelect');
   const room = document.getElementById('roomSelect');
@@ -127,7 +135,7 @@ if (screeningForm) {
   fillOptions(theater, cinemaState.theaters.map(item => [item.id, item.name]));
   movie.value = query.get('movieId') || '';
   theater.value = query.get('theaterId') || '';
-  document.getElementById('showDate').value = query.get('date') || cinemaState.today();
+  formDate.value = query.get('date') || cinemaState.today();
   function updateRooms() {
     room.replaceChildren(new Option('Chọn phòng', ''));
     const cinema = cinemaState.theaters.find(item => item.id === theater.value);
@@ -141,7 +149,7 @@ if (screeningForm) {
     const show = {
       id: 'show-' + Date.now() + '-' + Math.random().toString(16).slice(2),
       movieId: movie.value, theaterId: theater.value, room: Number(room.value),
-      date: document.getElementById('showDate').value,
+      date: formDate.value,
       time: document.getElementById('showTime').value,
       price: Number(document.getElementById('ticketPrice').value)
     };
@@ -149,7 +157,11 @@ if (screeningForm) {
     if (error) { alert(error); return; }
     try { cinemaState.saveScreenings([...cinemaState.screenings, show]); }
     catch { alert('Không lưu được dữ liệu. Vui lòng thử lại.'); return; }
-    window.location.href = 'index.html?' + new URLSearchParams({ date: show.date });
+    if (editor) {
+      editor.close();
+      document.getElementById('showDate').value = show.date;
+      document.getElementById('showDate').dispatchEvent(new Event('change'));
+    } else window.location.href = 'index.html?' + new URLSearchParams({ date: show.date });
   };
 }
 

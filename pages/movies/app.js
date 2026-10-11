@@ -314,16 +314,16 @@ cells[0].append(poster);
     updatePosterPreview();
     updateSelectedGenres();
 
-    list.hidden = true;
-    editor.hidden = false;
+    editor.showModal();
     window.scrollTo({ top: 0 });
   }
+
+  editor.addEventListener("cancel", event => { event.preventDefault(); closeMovieEditor(); });
 
   function closeMovieEditor() {
     imageReadVersion++;
     posterLoading = false;
-    editor.hidden = true;
-    list.hidden = false;
+    editor.close();
     window.scrollTo({ top: 0 });
   }
 
@@ -557,14 +557,14 @@ function initGenresPage() {
       descriptionInput.value = genre.description;
     }
 
-    list.hidden = true;
-    editor.hidden = false;
+    editor.showModal();
     nameInput.focus();
   }
 
+  editor.addEventListener("cancel", event => { event.preventDefault(); closeEditor(); });
+
   function closeEditor() {
-    editor.hidden = true;
-    list.hidden = false;
+    editor.close();
     editingId = null;
   }
 

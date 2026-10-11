@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="suatchieu.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../form-dialog.css">
 </head>
 <body class="embedded">
 
@@ -66,7 +67,48 @@
   </main>
 </div>
 
+<dialog id="screeningEditor" class="form-dialog" aria-labelledby="screeningTitle">
+<button type="button" class="dialog-close" aria-label="Đóng" onclick="document.getElementById('movieReset').click()">×</button>
+<form id="screeningForm">
+            <div>
+                <h2 id="screeningTitle">Thêm suất chiếu mới</h2>
+            </div>
+            <div>
+                <label for="movieSelect">Phim:</label>
+                <select id="movieSelect" required>
+                    <option value="">Chọn phim</option>
+                </select>
+            </div>
+            <div>
+                <label for="theaterSelect">Rạp chiếu:</label>
+                <select id="theaterSelect" required>
+                    <option value="">Chọn rạp</option>
+                </select>
+            </div>
+                <label for="roomSelect">Phòng chiếu:</label>
+                <select id="roomSelect" required>
+                    <option value="">Chọn phòng</option>
+                </select>
+            <div class="input">
+                <label for="showDate">Ngày chiếu:</label>
+                <input type="date" id="screeningDate" required>
+            </div>
+            <div class="input">
+                <label for="showTime">Giờ chiếu:</label>
+                <input type="time" id="showTime" required>
+            </div>
+            <div class="input">
+                <label for="ticketPrice">Giá vé:</label>
+                <input type="number" id="ticketPrice" placeholder="Nhập giá vé" min="0" step="1000" required>
+            </div>
+            <div>
+                <button type="submit" id="movieSubmit">Tạo mới</button>
+                <button type="button" id="movieReset">Hủy</button>
+            </div>
+            </form>
+</dialog>
 <script src="../../shared-state.js"></script>
 <script src="app.js"></script>
+<script src="../../form-dialog.js"></script>
 </body>
 </html>

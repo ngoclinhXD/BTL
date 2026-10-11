@@ -28,6 +28,8 @@
     document.body.classList.toggle('login-screen', !loggedIn);
     const pageKey = page + '?' + query;
     if (pageKey !== currentPage) {
+      document.body.classList.remove('form-dialog-open');
+      document.querySelector('.sidebar').inert = false;
       // Recreate the browsing context so iframe navigation adds no extra Back/Forward steps.
       if (currentPage !== undefined) frame.remove();
       frame.title = pageTitles[page];
@@ -46,6 +48,11 @@
   window.addEventListener('message', event => {
     const message = event.data;
     if (event.source !== frame.contentWindow || !message || typeof message !== 'object' || Array.isArray(message)) return;
+    if (loggedIn && message.type === 'FORM_DIALOG_STATE' && typeof message.open === 'boolean') {
+      document.body.classList.toggle('form-dialog-open', message.open);
+      document.querySelector('.sidebar').inert = message.open;
+      return;
+    }
     if (!loggedIn) {
       if (message.type !== 'LOGIN') return;
       // shortcut: this is a client-side demo login, use server authentication for real accounts.
@@ -81,7 +88,11 @@
   });
 
   document.getElementById('sidebarToggle').addEventListener('click', () => {
-    document.body.classList.toggle('sidebar-collapsed');
+    const collapsed = document.body.classList.toggle('sidebar-collapsed');
+    const toggle = document.getElementById('sidebarToggle');
+    toggle.querySelector('i').className = collapsed ? 'bi bi-camera-reels-fill' : 'bi bi-list';
+    toggle.setAttribute('aria-expanded', String(!collapsed));
+    toggle.setAttribute('aria-label', collapsed ? 'Mở rộng thanh điều hướng' : 'Thu gọn thanh điều hướng');
   });
   document.getElementById('btnLogout').addEventListener('click', () => {
     loggedIn = false;
@@ -92,6 +103,11 @@
     }
     if (window.name === loginKey) window.name = '';
     loadPage();
+  });
+  document.body.addEventListener('click', event => {
+    if (event.target === document.body && document.body.classList.contains('form-dialog-open')) {
+      frame.contentWindow.postMessage({ type: 'CLOSE_FORM_DIALOG' }, '*');
+    }
   });
   window.addEventListener('hashchange', loadPage);
   loadPage();

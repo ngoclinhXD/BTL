@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link rel="stylesheet" href="genres.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../form-dialog.css">
 </head>
 <body>
   <main class="content" id="mainContent">
@@ -40,7 +41,8 @@
         </div>
       </div>
 
-      <div class="genre-card" id="genreEditor" hidden>
+      <dialog class="genre-card form-dialog" id="genreEditor" aria-labelledby="genreFormTitle">
+<button type="button" class="dialog-close" aria-label="Đóng" onclick="document.getElementById('cancelGenre').click()">×</button>
         <h3 id="genreFormTitle">Thêm thể loại</h3>
 
         <form id="genreForm">
@@ -55,11 +57,12 @@
             <button class="genre-cancel" id="cancelGenre" type="button">Hủy</button>
           </div>
         </form>
-      </div>
+      </dialog>
     </section>
   </main>
 
 <script src="../../shared-state.js"></script>
 <script src="app.js"></script>
+<script src="../../form-dialog.js"></script>
 </body>
 </html>

@@ -81,11 +81,11 @@ window.productPage = {
             document.getElementById('product-id').value = '';
         }
 
-        modal.classList.add('show');
+        modal.showModal();
     },
 
     closeModal: function() {
-        document.getElementById('product-modal').classList.remove('show');
+        document.getElementById('product-modal').close();
     },
 
     saveProduct: function(event) {
