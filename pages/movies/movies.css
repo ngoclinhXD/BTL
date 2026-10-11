@@ -434,3 +434,37 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   line-height: 1;
   white-space: nowrap;
 }
+
+#movieEditor .image-drop {
+  padding: 12px;
+  border: 1px dashed #d5d8e0;
+  border-radius: 8px;
+}
+#movieEditor .image-drop.is-dragging {
+  border-color: #d72c2c;
+  background: #fff3f3;
+}
+#movieEditor input[type="file"] {
+  padding: 0;
+  border: 0;
+  max-width: 100%;
+}
+#movieEditor input[type="file"]::file-selector-button {
+  padding: 8px 12px;
+  margin-right: 10px;
+  border: 0;
+  border-radius: 6px;
+  background: #d72c2c;
+  color: white;
+  font: inherit;
+  cursor: pointer;
+}
+#movieEditor input[type="file"]::file-selector-button:hover {
+  background: #b92222;
+}
+#movieEditor .image-drop small {
+  display: block;
+  margin-top: 8px;
+  color: #687083;
+  font-size: 12px;
+}
