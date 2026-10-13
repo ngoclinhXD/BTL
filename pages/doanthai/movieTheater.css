@@ -19,17 +19,13 @@ article
     margin-bottom: 20px;
     box-shadow: var(--shadow-sidebar);
 }
-
-article#searchBar
-{
+article#searchBar {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
     gap: 12px;
     margin: 0 0 20px;
 }
-
-#searchBar #searchInput { flex: 1 1 260px; min-width: 0; }
 #searchBar label { white-space: nowrap; }
 #searchBar #theaterShowDate { width: auto; flex: 0 0 auto; color: var(--text-primary); }
 
@@ -39,7 +35,7 @@ article.rooms-modal
   margin: 10px 0;
 }
 
-input
+input:not(#searchInput)
 {
     display: block;
     width: 30%;
@@ -146,13 +142,11 @@ th, td
   text-decoration: none;
   cursor: pointer;
 }
-
 span.theaterName
 {
   cursor: pointer;
   font-weight: bold;
 }
-
 span.theaterName:hover
 {
   text-decoration: underline;
