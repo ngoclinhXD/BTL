@@ -66,7 +66,7 @@ function showLink(show, title) {
   };
   return link;
 }
-
+let editingScreeningId = null;
 const screeningRows = document.getElementById('film');
 if (screeningRows) {
   const date = document.getElementById('showDate');
@@ -92,18 +92,56 @@ if (screeningRows) {
         show.date.split('-').reverse().join('/'), show.time,
         show.price.toLocaleString('vi-VN') + ' ₫', cinema?.seats[show.room - 1] || 0]
         .forEach(value => addCell(row, value));
+      const edit = document.createElement('button');
+      edit.type = 'button';
+      edit.className = 'edit';
+      edit.title = 'Sửa suất chiếu';
+      edit.setAttribute('aria-label', 'Sửa suất chiếu');
+      edit.innerHTML = '<i class="bi bi-pencil"></i>';
+
+      edit.onclick = () => {
+        editingScreeningId = show.id;
+        screeningForm.reset();
+
+        document.getElementById('movieSelect').value = show.movieId;
+
+        const theaterSelect = document.getElementById('theaterSelect');
+        theaterSelect.value = show.theaterId;
+        theaterSelect.dispatchEvent(new Event('change'));
+
+        document.getElementById('roomSelect').value = String(show.room);
+        document.getElementById('screeningDate').value = show.date;
+        document.getElementById('showTime').value = show.time;
+        document.getElementById('ticketPrice').value = show.price;
+
+        document.getElementById('screeningTitle').textContent = 'Sửa suất chiếu';
+        document.getElementById('movieSubmit').textContent = 'Lưu thay đổi';
+        document.getElementById('screeningEditor').showModal();
+      };
+
       const remove = document.createElement('button');
       remove.type = 'button';
-      remove.textContent = 'Xóa';
-      remove.setAttribute('aria-label', 'Xóa suất chiếu ' + (film?.title || '') + ' ' + show.date + ' ' + show.time);
+      remove.className = 'delete';
+      remove.title = 'Xóa suất chiếu';
+      remove.setAttribute('aria-label', 'Xóa suất chiếu');
+      remove.innerHTML = '<i class="bi bi-trash"></i>';
+
       remove.onclick = () => {
         if (!confirm('Xóa suất chiếu này?')) return;
+
         try {
-          cinemaState.saveScreenings(cinemaState.screenings.filter(item => item.id !== show.id));
+          cinemaState.saveScreenings(
+            cinemaState.screenings.filter(item => item.id !== show.id)
+          );
           renderScreenings();
-        } catch { alert('Không lưu được dữ liệu. Suất chiếu chưa bị xóa.'); }
+        } catch {
+          alert('Không lưu được dữ liệu. Suất chiếu chưa bị xóa.');
+        }
       };
-      addCell(row, '').append(remove);
+
+      const actionsCell = addCell(row, '');
+      actionsCell.className = 'actions';
+      actionsCell.append(edit, remove);
     });
     if (!shows.length) addCell(screeningRows.insertRow(), 'Chưa có suất chiếu phù hợp.').colSpan = 8;
   }
@@ -113,6 +151,10 @@ if (screeningRows) {
     renderScreenings();
   };
   document.getElementById('add').onclick = () => {
+    editingScreeningId = null;
+    document.getElementById('screeningTitle').textContent = 'Thêm suất chiếu mới';
+    document.getElementById('movieSubmit').textContent = 'Tạo mới';
+
     screeningForm.reset();
     document.getElementById('movieSelect').value = movie.value;
     document.getElementById('theaterSelect').value = theater.value;
@@ -147,7 +189,7 @@ if (screeningForm) {
   screeningForm.onsubmit = event => {
     event.preventDefault();
     const show = {
-      id: 'show-' + Date.now() + '-' + Math.random().toString(16).slice(2),
+      id: editingScreeningId ?? ('show-' + Date.now() + '-' + Math.random().toString(16).slice(2)),
       movieId: movie.value, theaterId: theater.value, room: Number(room.value),
       date: formDate.value,
       time: document.getElementById('showTime').value,
@@ -155,7 +197,12 @@ if (screeningForm) {
     };
     const error = cinemaState.screeningError(show);
     if (error) { alert(error); return; }
-    try { cinemaState.saveScreenings([...cinemaState.screenings, show]); }
+    try {
+      const updatedShows = editingScreeningId === null
+        ? [...cinemaState.screenings, show] : cinemaState.screenings.map(item => item.id === editingScreeningId ? { ...item, ...show } : item);
+      cinemaState.saveScreenings(updatedShows);
+      editingScreeningId = null;
+    }
     catch { alert('Không lưu được dữ liệu. Vui lòng thử lại.'); return; }
     if (editor) {
       editor.close();
@@ -170,6 +217,7 @@ if (theaterNames.length) {
   date.type = 'date';
   date.value = query.get('date') || cinemaState.today();
   date.id = 'theaterShowDate';
+  date.classList.add('control');
   const label = document.createElement('label');
   label.htmlFor = date.id;
   label.textContent = 'Phim đang chiếu ngày: ';

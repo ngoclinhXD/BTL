@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="movieTheater.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../control.css">
 </head>
 <body class="embedded">
 
@@ -19,7 +20,10 @@
         <h2>Quản lý rạp chiếu</h2>
 
         <article id="searchBar">
-            <input type="text" id="searchInput" placeholder="Tìm kiếm rạp chiếu...">
+          <div class="search-box">
+            <i class="bi bi-search" aria-hidden="true"></i>
+            <input type="text" id="searchInput" placeholder="Tìm kiếm rạp chiếu..." class="control">
+          </div>
         </article>
 
         <article id="theaterTable">

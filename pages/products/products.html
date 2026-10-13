@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="../../styles.css">
   <link rel="stylesheet" href="./products.css">
   <link rel="stylesheet" href="../../form-dialog.css">
+  <link rel="stylesheet" href="../../control.css">
 </head>
 <body class="iframe-page">
 <main class="content">
@@ -27,10 +28,10 @@
     <div class="card-header">
         <div class="search-box">
             <i class="bi bi-search"></i>
-            <input type="text" id="search-product" placeholder="Tìm kiếm sản phẩm..." onkeyup="productPage.search()">
+            <input type="text" id="search-product" placeholder="Tìm kiếm sản phẩm..." onkeyup="productPage.search()" class="control">
         </div>
         <div class="filter-box">
-            <select id="filter-status" onchange="productPage.search()">
+            <select id="filter-status" onchange="productPage.search()" class="control">
                 <option value="all">Tất cả trạng thái</option>
                 <option value="active">Đang bán</option>
                 <option value="inactive">Ngừng bán</option>

@@ -150,7 +150,7 @@ cells[0].append(poster);
       editButton.title = "Sửa phim";
       editButton.setAttribute("aria-label", `Sửa ${movie.title}`);
       editButton.append(
-        createElement("i", undefined, "bi bi-pencil-square")
+        createElement("i", undefined, "bi bi-pencil")
       );
       editButton.onclick = () => openForm(movie);
 
@@ -159,7 +159,7 @@ cells[0].append(poster);
       deleteButton.title = "Xóa phim";
       deleteButton.setAttribute("aria-label", `Xóa ${movie.title}`);
       deleteButton.append(
-        createElement("i", undefined, "bi bi-trash-fill")
+        createElement("i", undefined, "bi bi-trash")
       );
 
       deleteButton.onclick = () => {
@@ -540,7 +540,7 @@ function initGenresPage() {
       editButton.setAttribute("aria-label", `Sửa ${genre.name}`);
 
       const editIcon = document.createElement("i");
-      editIcon.className = "bi bi-pencil-square";
+      editIcon.className = "bi bi-pencil";
       editButton.append(editIcon);
 
       editButton.onclick = () => openEditor(genre);
@@ -551,7 +551,7 @@ function initGenresPage() {
       deleteButton.setAttribute("aria-label", `Xóa ${genre.name}`);
 
       const deleteIcon = document.createElement("i");
-      deleteIcon.className = "bi bi-trash-fill";
+      deleteIcon.className = "bi bi-trash";
       deleteButton.append(deleteIcon);
 
       deleteButton.onclick = () => {

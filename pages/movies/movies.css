@@ -83,7 +83,6 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   box-shadow: 0 2px 5px rgb(0 0 0 / 6%);
 }
 
-#mainContent .filters input,
 #mainContent .filters select {
   padding: 13px;
   border: 1px solid #ddd;
@@ -91,13 +90,6 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   background: white;
   color: #43505c;
 }
-
-#mainContent #search {
-  width: 420px;
-  max-width: 100%;
-}
-
-#mainContent .filters input:focus,
 #mainContent .filters select:focus {
   outline: 2px solid #9fc3df;
   outline-offset: 1px;
@@ -222,42 +214,22 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   color: #ffc107;
   font-size: 22px;
 }
-
 #mainContent .actions {
   white-space: nowrap;
 }
-
-#mainContent .edit,
-#mainContent .delete {
-  padding: 7px;
-  background: transparent;
-  font-size: 23px;
-}
-
-#mainContent .edit {
-  color: #238ac7;
-}
-
-#mainContent .delete {
-  color: #dc3545;
-}
-
 #mainContent .empty {
   text-align: center;
   color: #888;
 }
-
 #movie-form {
   display: grid;
   gap: 13px;
 }
-
 #movie-form label {
   display: grid;
   gap: 6px;
   font-size: 14px;
 }
-
 #movie-form input,
 #movie-form select {
   width: 100%;
@@ -274,58 +246,28 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   outline: 2px solid #9fc3df;
   outline-offset: 1px;
 }
-
-@media (max-width: 768px) {
-  #mainContent {
-    padding: 20px 16px;
-  }
-
-  #mainContent .heading h2 {
-    font-size: 21px;
-  }
-
-  #mainContent .primary {
-    padding: 12px 14px;
-    font-size: 13px;
-  }
-
-  #mainContent .filters {
-    flex-direction: column;
-    padding: 18px;
-  }
-
-  #mainContent #search {
-    width: 100%;
-    box-sizing: border-box;
-  }
-}
 #mainContent .tag {
   display: inline-flex;
   align-items: center;
   gap: 6px;
 }
-
 #movieList[hidden],
 #movieEditor[hidden],
 #posterPreviewBox[hidden] {
   display: none !important;
 }
-
 #movieEditor .movie-card {
   padding: 26px;
   background: white;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgb(0 0 0 / 6%);
 }
-
 #movieEditor .movie-card h2 {
   margin-bottom: 20px;
 }
-
 #movieEditor #movie-form {
   gap: 20px;
 }
-
 #movieEditor .movie-grid {
   display: grid;
   gap: 18px;
@@ -339,13 +281,11 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 #movieEditor .movie-grid.three {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
-
 #movieEditor small {
   display: block;
   margin-top: 6px;
   color: #888;
 }
-
 #posterPreview {
   display: block;
   width: 140px;
@@ -354,13 +294,11 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   margin: 12px 0;
   border-radius: 4px;
 }
-
 #mainContent #removePoster {
   padding: 8px 12px;
   background: #dc3545;
   color: white;
 }
-
 #movieGenreOptions {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -370,7 +308,6 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   border: 1px solid #eee;
   border-radius: 6px;
 }
-
 #movieGenreOptions label {
   display: flex;
   align-items: center;
