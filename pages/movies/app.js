@@ -1,664 +1,250 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const sidebar = document.getElementById("sidebar");
-  const toggle = document.getElementById("sidebarToggle");
+document.getElementById('movieReset')?.addEventListener('click', () => {
+  const editor = document.getElementById('screeningEditor');
+  if (editor) editor.close();
+  else window.location.href = 'index.html' + window.location.search;
+});
 
-  if (!sidebar || !toggle) return;
+document.querySelectorAll('.status-select').forEach(select => {
+  const statusClasses = ['status-active', 'status-maintenance', 'status-inactive'];
 
-  document.body.classList.add("sidebar-collapsed");
+  const updateStatusColour = () => {
+    select.classList.remove(...statusClasses);
+    select.classList.add(`status-${select.value}`);
+  };
 
-  toggle.addEventListener("mouseenter", () => {
-    document.body.classList.remove("sidebar-collapsed");
-  });
+  updateStatusColour();
+  select.addEventListener('change', updateStatusColour);
+});
 
-  sidebar.addEventListener("mouseleave", () => {
-    document.body.classList.add("sidebar-collapsed");
+/* Modal */
+const modals = document.querySelectorAll(".modal");
+const theaterNames = document.querySelectorAll(".theaterName");
+
+theaterNames.forEach((theaterName, index) => {
+  theaterName.addEventListener("click", () => {
+    modals[index].style.display = "flex";
   });
 });
 
+modals.forEach(modal => {
+  const closeButton = modal.querySelector(".close");
 
-function initMoviesPage() {
-  const tbody = document.getElementById("movies");
-  const search = document.getElementById("search");
-  const filter = document.getElementById("filter");
-  const list = document.getElementById("movieList");
-  const editor = document.getElementById("movieEditor");
-  const form = document.getElementById("movie-form");
-  const addButton = document.getElementById("add");
-  const cancelButton = document.getElementById("cancel");
-  const formTitle = document.getElementById("form-title");
+  closeButton.addEventListener("click", () => {
+    modal.style.display = "none";
+  });
 
-  if (!tbody || !search || !filter || !list || !editor ||
-  !form || !addButton || !cancelButton || !formTitle) {
-    return;
-  }
+  modal.addEventListener("click", event => {
+    if (event.target === modal) {
+      modal.style.display = "none";
+    }
+  });
+});
 
-
-
-  const statusLabels = {
-    showing: "ĐANG CHIẾU",
-    soon: "SẮP CHIẾU",
-    ended: "NGỪNG CHIẾU"
+const query = new URLSearchParams(window.location.search);
+function fillOptions(select, items) {
+  items.forEach(([value, label]) => select.add(new Option(label, value)));
+}
+function addCell(row, text) {
+  const cell = row.insertCell();
+  cell.textContent = text;
+  return cell;
+}
+function showLink(show, title) {
+  const link = document.createElement('a');
+  link.textContent = title;
+  link.href = '../../index.html#showtimes?' + new URLSearchParams({
+    date: show.date, movieId: show.movieId, theaterId: show.theaterId
+  });
+  link.target = '_top';
+  link.onclick = event => {
+    if (window.parent === window) return;
+    event.preventDefault();
+    window.parent.postMessage({
+      type: 'NAVIGATE', page: 'showtimes',
+      query: new URLSearchParams({ date: show.date, movieId: show.movieId, theaterId: show.theaterId }).toString()
+    }, '*');
   };
+  return link;
+}
+let editingScreeningId = null;
+const screeningRows = document.getElementById('film');
+if (screeningRows) {
+  const date = document.getElementById('showDate');
+  const movie = document.getElementById('movie');
+  const theater = document.getElementById('cinema');
+  fillOptions(movie, cinemaState.movies.map(item => [String(item.id), item.title]));
+  fillOptions(theater, cinemaState.theaters.map(item => [item.id, item.name]));
+  date.value = query.get('date') || '';
+  movie.value = query.get('movieId') || '';
+  theater.value = query.get('theaterId') || '';
+  function renderScreenings() {
+    screeningRows.replaceChildren();
+    const shows = cinemaState.screenings.filter(show =>
+      (!date.value || show.date === date.value) &&
+      (!movie.value || show.movieId === movie.value) &&
+      (!theater.value || show.theaterId === theater.value));
+    shows.sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
+    shows.forEach(show => {
+      const film = cinemaState.movies.find(item => String(item.id) === show.movieId);
+      const cinema = cinemaState.theaters.find(item => item.id === show.theaterId);
+      const row = screeningRows.insertRow();
+      [film?.title || 'Phim đã xóa', cinema?.name || '', 'Phòng ' + show.room,
+        show.date.split('-').reverse().join('/'), show.time,
+        show.price.toLocaleString('vi-VN') + ' ₫', cinema?.seats[show.room - 1] || 0]
+        .forEach(value => addCell(row, value));
+      const edit = document.createElement('button');
+      edit.type = 'button';
+      edit.className = 'edit';
+      edit.title = 'Sửa suất chiếu';
+      edit.setAttribute('aria-label', 'Sửa suất chiếu');
+      edit.innerHTML = '<i class="bi bi-pencil"></i>';
 
-  let movies = cinemaState.movies;
-  let editingId = null;
+      edit.onclick = () => {
+        editingScreeningId = show.id;
+        screeningForm.reset();
 
+        document.getElementById('movieSelect').value = show.movieId;
 
-  function createElement(tag, text, className) {
-    const element = document.createElement(tag);
+        const theaterSelect = document.getElementById('theaterSelect');
+        theaterSelect.value = show.theaterId;
+        theaterSelect.dispatchEvent(new Event('change'));
 
-    if (text !== undefined) {
-      element.textContent = text;
-    }
+        document.getElementById('roomSelect').value = String(show.room);
+        document.getElementById('screeningDate').value = show.date;
+        document.getElementById('showTime').value = show.time;
+        document.getElementById('ticketPrice').value = show.price;
 
-    if (className) {
-      element.className = className;
-    }
+        document.getElementById('screeningTitle').textContent = 'Sửa suất chiếu';
+        document.getElementById('movieSubmit').textContent = 'Lưu thay đổi';
+        document.getElementById('screeningEditor').showModal();
+      };
 
-    return element;
-  }
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'delete';
+      remove.title = 'Xóa suất chiếu';
+      remove.setAttribute('aria-label', 'Xóa suất chiếu');
+      remove.innerHTML = '<i class="bi bi-trash"></i>';
 
-  function saveMovies() {
-    cinemaState.saveMovies(movies);
-    renderMovies();
-    }
+      remove.onclick = () => {
+        if (!confirm('Xóa suất chiếu này?')) return;
 
-  function renderMovies() {
-    tbody.replaceChildren();
-
-    const keyword = search.value.trim().toLocaleLowerCase("vi");
-
-    const results = movies.filter(movie => {
-      const matchesSearch = movie.title
-        .toLocaleLowerCase("vi")
-        .includes(keyword);
-
-      const matchesStatus =
-        filter.value === "" || cinemaState.movieStatus(movie) === filter.value;
-
-      return matchesSearch && matchesStatus;
-    });
-
-    if (results.length === 0) {
-      const row = createElement("tr");
-      const cell = createElement("td", "Không tìm thấy phim.", "empty");
-
-      cell.colSpan = 8;
-      row.append(cell);
-      tbody.append(row);
-      return;
-    }
-
-    results.forEach(movie => {
-      const row = createElement("tr");
-      const cells = Array.from(
-        { length: 8 },
-        () => createElement("td")
-      );
-
-    let poster;
-
-    if (movie.poster) {
-        poster = createElement("img", undefined, "poster");
-        poster.src = movie.poster;
-        poster.alt = movie.title;
-    } 
-    else {
-        poster = createElement("div", movie.title, "poster");
-        poster.style.backgroundColor = movie.color || "#31465a";
-    }
-
-cells[0].append(poster);
-
-      cells[1].append(
-        createElement("div", movie.title, "title"),
-        createElement("div", movie.subtitle || "", "subtitle")
-      );
-
-      const tags = createElement("div", undefined, "tags");
-
-      movie.genres.forEach(genre => {
-        const tag = createElement("span", undefined, "tag");
-        const icon = createElement("i", undefined, "bi bi-tag-fill");
-
-        tag.append(icon, document.createTextNode(genre));
-        tags.append(tag);
-    });
-
-      cells[2].append(tags);
-
-      cells[3].textContent = `${movie.duration} phút`;
-      const screeningLink = createElement("a", movie.date.split("-").reverse().join("/"));
-      screeningLink.href = "../../index.html#showtimes?" + new URLSearchParams({
-        date: movie.date, movieId: String(movie.id)
-      });
-      screeningLink.target = "_top";
-      cells[4].append(screeningLink);
-
-      cells[5].append(
-        createElement("span", statusLabels[cinemaState.movieStatus(movie)],`status ${cinemaState.movieStatus(movie)}`));
-
-      cells[6].className = "rating";
-      cells[6].append(
-        createElement("span", "★ ", "star"),
-        document.createTextNode(`${(movie.rating ?? 0).toFixed(1)}/10`)
-      );
-      cells[7].className = "actions";
-
-      const editButton = createElement("button", undefined, "edit");
-      editButton.type = "button";
-      editButton.title = "Sửa phim";
-      editButton.setAttribute("aria-label", `Sửa ${movie.title}`);
-      editButton.append(
-        createElement("i", undefined, "bi bi-pencil-square")
-      );
-      editButton.onclick = () => openForm(movie);
-
-      const deleteButton = createElement("button", undefined, "delete");
-      deleteButton.type = "button";
-      deleteButton.title = "Xóa phim";
-      deleteButton.setAttribute("aria-label", `Xóa ${movie.title}`);
-      deleteButton.append(
-        createElement("i", undefined, "bi bi-trash-fill")
-      );
-
-      deleteButton.onclick = () => {
-        if (cinemaState.screenings.some(show => show.movieId === String(movie.id))) {
-          alert("Phim đang có suất chiếu. Hãy xóa suất chiếu trước khi xóa phim.");
-          return;
-        }
-        if (confirm(`Bạn muốn xóa phim "${movie.title}"?`)) {
-          movies = movies.filter(item => item.id !== movie.id);
-          saveMovies();
+        try {
+          cinemaState.saveScreenings(
+            cinemaState.screenings.filter(item => item.id !== show.id)
+          );
+          renderScreenings();
+        } catch {
+          alert('Không lưu được dữ liệu. Suất chiếu chưa bị xóa.');
         }
       };
 
-      cells[7].append(editButton, deleteButton);
-      row.append(...cells);
-      tbody.append(row);
+      const actionsCell = addCell(row, '');
+      actionsCell.className = 'actions';
+      actionsCell.append(edit, remove);
     });
+    if (!shows.length) addCell(screeningRows.insertRow(), 'Chưa có suất chiếu phù hợp.').colSpan = 8;
   }
+  [date, movie, theater].forEach(input => input.addEventListener('change', renderScreenings));
+  document.getElementById('resetFilter').onclick = () => {
+    date.value = movie.value = theater.value = '';
+    renderScreenings();
+  };
+  document.getElementById('add').onclick = () => {
+    editingScreeningId = null;
+    document.getElementById('screeningTitle').textContent = 'Thêm suất chiếu mới';
+    document.getElementById('movieSubmit').textContent = 'Tạo mới';
 
-  const posterFile = document.getElementById("posterFile");
-  const previewBox = document.getElementById("posterPreviewBox");
-  const preview = document.getElementById("posterPreview");
-  const genreOptions = document.getElementById("movieGenreOptions");
-  const saveButton = document.getElementById("saveMovie");
+    screeningForm.reset();
+    document.getElementById('movieSelect').value = movie.value;
+    document.getElementById('theaterSelect').value = theater.value;
+    document.getElementById('theaterSelect').dispatchEvent(new Event('change'));
+    document.getElementById('screeningDate').value = date.value || cinemaState.today();
+    document.getElementById('screeningEditor').showModal();
+  };
+  renderScreenings();
+}
 
-  let currentPoster = "";
-  let posterLoading = false;
-  let imageReadVersion = 0;
-
-  function renderGenresOptions(){
-    const savedGenres = JSON.parse(sessionStorage.getItem("btl-genres"));
-    const availableGenres = savedGenres !== null ? savedGenres.map(genre => genre.name)
-    : [
-      "Chính kịch", "Hài", "Hành động", "Hoạt hình","Khoa học viễn tưởng", "Kinh dị", "Phiêu lưu", "Tình cảm"
-    ];
-
-
-    genreOptions.replaceChildren();
-    availableGenres.forEach(genre => {
-      const label=document.createElement("label");
-      const input=document.createElement("input");
-      input.type = "checkbox";
-      input.name = "genres";
-      input.value = genre;
-
-      label.append(input,genre);
-      genreOptions.append(label);
-    });
+const screeningForm = document.getElementById('screeningForm');
+if (screeningForm) {
+  const editor = document.getElementById('screeningEditor');
+  const formDate = document.getElementById('screeningDate') || document.getElementById('showDate');
+  editor?.addEventListener('cancel', event => { event.preventDefault(); editor.close(); });
+  const movie = document.getElementById('movieSelect');
+  const theater = document.getElementById('theaterSelect');
+  const room = document.getElementById('roomSelect');
+  fillOptions(movie, cinemaState.movies.map(item => [String(item.id), item.title]));
+  fillOptions(theater, cinemaState.theaters.map(item => [item.id, item.name]));
+  movie.value = query.get('movieId') || '';
+  theater.value = query.get('theaterId') || '';
+  formDate.value = query.get('date') || cinemaState.today();
+  function updateRooms() {
+    room.replaceChildren(new Option('Chọn phòng', ''));
+    const cinema = cinemaState.theaters.find(item => item.id === theater.value);
+    if (cinema) fillOptions(room, cinema.seats.map((seats, index) =>
+      [String(index + 1), 'Phòng ' + (index + 1) + ' (' + seats + ' ghế)']));
   }
-
-  function updateSelectedGenres() {
-    const selected = Array.from(
-      genreOptions.querySelectorAll("input:checked")
-    ).map(input => input.value);
-
-    document.getElementById("selectedGenreCount").textContent =
-      selected.length;
-
-    const tags = document.getElementById("selectedGenreTags");
-    tags.replaceChildren();
-
-    selected.forEach(genre => {
-      tags.append(createElement("span", genre, "tag"));
-    });
-  }
-
-  genreOptions.onchange = updateSelectedGenres;
-
-  function updatePosterPreview() {
-    previewBox.hidden = !currentPoster;
-
-    if (currentPoster) {
-      preview.src = currentPoster;
-    } else {
-      preview.removeAttribute("src");
-    }
-  }
-
-  const posterDrop = document.getElementById("posterDrop");
-  posterDrop.ondragover = event => {
+  theater.addEventListener('change', updateRooms);
+  updateRooms();
+  screeningForm.onsubmit = event => {
     event.preventDefault();
-    posterDrop.classList.add("is-dragging");
-  };
-  posterDrop.ondragleave = event => {
-    if (!posterDrop.contains(event.relatedTarget)) posterDrop.classList.remove("is-dragging");
-  };
-  posterDrop.ondrop = event => {
-    event.preventDefault();
-    posterDrop.classList.remove("is-dragging");
-    if (event.dataTransfer.files.length !== 1) {
-      alert("Chọn một ảnh mỗi lần.");
-      return;
-    }
-    posterFile.files = event.dataTransfer.files;
-    posterFile.onchange();
-  };
-
-  posterFile.onchange = () => {
-    const version = ++imageReadVersion;
-    posterLoading = false;
-
-    const file = posterFile.files[0];
-    if (!file) return;
-
-    const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
-
-    if (!allowedTypes.includes(file.type) || file.size > 5 * 1024 * 1024) {
-      alert("Chọn ảnh JPG, PNG hoặc GIF không quá 5MB.");
-      posterFile.value = "";
-      return;
-    }
-
-    posterLoading = true;
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      if (version !== imageReadVersion) return;
-
-      currentPoster = reader.result;
-      posterLoading = false;
-      updatePosterPreview();
+    const show = {
+      id: editingScreeningId ?? ('show-' + Date.now() + '-' + Math.random().toString(16).slice(2)),
+      movieId: movie.value, theaterId: theater.value, room: Number(room.value),
+      date: formDate.value,
+      time: document.getElementById('showTime').value,
+      price: Number(document.getElementById('ticketPrice').value)
     };
-
-    reader.onerror = () => {
-      if (version !== imageReadVersion) return;
-
-      posterLoading = false;
-      posterFile.value = "";
-      alert("Không đọc được ảnh, bạn hãy chọn lại.");
-    };
-
-    reader.readAsDataURL(file);
+    const error = cinemaState.screeningError(show);
+    if (error) { alert(error); return; }
+    try {
+      const updatedShows = editingScreeningId === null
+        ? [...cinemaState.screenings, show] : cinemaState.screenings.map(item => item.id === editingScreeningId ? { ...item, ...show } : item);
+      cinemaState.saveScreenings(updatedShows);
+      editingScreeningId = null;
+    }
+    catch { alert('Không lưu được dữ liệu. Vui lòng thử lại.'); return; }
+    if (editor) {
+      editor.close();
+      document.getElementById('showDate').value = show.date;
+      document.getElementById('showDate').dispatchEvent(new Event('change'));
+    } else window.location.href = 'index.html?' + new URLSearchParams({ date: show.date });
   };
+}
 
-  document.getElementById("removePoster").onclick = () => {
-    imageReadVersion++;
-    posterLoading = false;
-    currentPoster = "";
-    posterFile.value = "";
-    updatePosterPreview();
-  };
-
-  function openForm(movie = null) {
-    imageReadVersion++;
-    posterLoading = false;
-    form.reset();
-
-    renderGenresOptions();
-
-    editingId = movie ? movie.id : null;
-    currentPoster = movie?.poster || "";
-
-    formTitle.textContent = movie ? "Sửa phim" : "Thêm phim mới";
-    saveButton.textContent = movie ? "Cập nhật" : "Tạo mới";
-
-    if (movie) {
-      const names = [
-        "title", "subtitle", "duration", "date", "endDate", "age", "language", "subtitles", "status"
-      ];
-
-      names.forEach(name => {
-        form.elements.namedItem(name).value = movie[name] ?? "";
+if (theaterNames.length) {
+  const date = document.createElement('input');
+  date.type = 'date';
+  date.value = query.get('date') || cinemaState.today();
+  date.id = 'theaterShowDate';
+  date.classList.add('control');
+  const label = document.createElement('label');
+  label.htmlFor = date.id;
+  label.textContent = 'Phim đang chiếu ngày: ';
+  document.getElementById('searchBar').append(label, date);
+  function renderTheaterMovies() {
+    if (!date.value) date.value = cinemaState.today();
+    modals.forEach((modal, theaterIndex) => {
+      const theater = cinemaState.theaters[theaterIndex];
+      modal.querySelectorAll('tbody tr').forEach((row, roomIndex) => {
+        const cell = row.cells[4];
+        cell.replaceChildren();
+        const shows = cinemaState.screenings.filter(show =>
+          show.theaterId === theater.id && show.room === roomIndex + 1 && show.date === date.value);
+        shows.forEach((show, index) => {
+          const movie = cinemaState.movies.find(item => String(item.id) === show.movieId);
+          if (index) cell.append(document.createElement('br'));
+          cell.append(showLink(show, (movie?.title || 'Phim đã xóa') + ' · ' + show.time));
+        });
+        if (!shows.length) cell.textContent = 'Chưa có suất chiếu';
       });
-      form.elements.namedItem("status").value = cinemaState.movieStatus(movie);
-    }
-
-    genreOptions.querySelectorAll("input").forEach(input => {
-      input.checked = movie ? movie.genres.includes(input.value) : false;
-    });
-
-    updatePosterPreview();
-    updateSelectedGenres();
-
-    editor.showModal();
-    window.scrollTo({ top: 0 });
-  }
-
-  editor.addEventListener("cancel", event => { event.preventDefault(); closeMovieEditor(); });
-
-  function closeMovieEditor() {
-    imageReadVersion++;
-    posterLoading = false;
-    editor.close();
-    window.scrollTo({ top: 0 });
-  }
-
-  form.onsubmit = event => {
-    event.preventDefault();
-
-    if (posterLoading) {
-      alert("Ảnh đang được đọc, bạn đợi một chút rồi lưu nhé.");
-      return;
-    }
-
-    const fields = new FormData(form);
-
-    const movieData = {
-      title: String(fields.get("title") || "").trim(),
-      subtitle: String(fields.get("subtitle") || "").trim(),
-      duration: Number(fields.get("duration")),
-      date: String(fields.get("date") || ""),
-      endDate: String(fields.get("endDate") || ""),
-      age: String(fields.get("age") || ""),
-      language: String(fields.get("language") || "").trim(),
-      subtitles: String(fields.get("subtitles") || "").trim(),
-      status: form.elements.namedItem("status").value,
-      genres: fields.getAll("genres"),
-      poster: currentPoster
-    };
-
-    if (
-      !movieData.title ||
-      !movieData.genres.length ||
-      !Number.isFinite(movieData.duration) ||
-      movieData.duration < 1 ||
-      movieData.duration > 600 ||
-      !movieData.date ||
-      !(movieData.status in statusLabels)
-    ) {
-      alert("Dữ liệu không hợp lệ!");
-      return;
-    }
-
-    if (movieData.endDate && movieData.endDate < movieData.date) {
-      alert("Ngày kết thúc phải từ ngày khởi chiếu trở đi.");
-      return;
-    }
-
-    if (editingId !== null) {
-      const updatedMovies = movies.map(movie =>
-        movie.id === editingId ? { ...movie, ...movieData } : movie
-      );
-      const invalidShow = cinemaState.screenings.find(show => cinemaState.screeningError(show, updatedMovies));
-      if (invalidShow) {
-        alert("Thay đổi này không phù hợp với suất chiếu đã lưu: " + cinemaState.screeningError(invalidShow, updatedMovies));
-        return;
-      }
-      movies = updatedMovies;
-    } else {
-      movies.push({
-        ...movieData,
-        id: `movie-${Date.now()}-${Math.random().toString(16).slice(2)}`,
-        color: "#31465a"
-      });
-    }
-
-    search.value = "";
-    filter.value = "";
-    saveMovies();
-    closeMovieEditor();
-  };
-  addButton.onclick = () => openForm();
-  cancelButton.onclick = closeMovieEditor;
-  search.oninput = renderMovies;
-  filter.onchange = renderMovies;
-
-  renderMovies();
-}
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", initMoviesPage);
-} else {
-  initMoviesPage();
-}
-
-function initGenresPage() {
-  const page = document.getElementById("genresPage");
-
-  if (!page) return;
-
-  const tbody = document.getElementById("genresTable");
-  const search = document.getElementById("genreSearch");
-  const list = document.getElementById("genresList");
-  const editor = document.getElementById("genreEditor");
-  const form = document.getElementById("genreForm");
-  const nameInput = document.getElementById("genreName");
-  const descriptionInput = document.getElementById("genreDescription");
-  const formTitle = document.getElementById("genreFormTitle");
-  const saveButton = document.getElementById("saveGenre");
-  const notice = document.getElementById("genreNotice");
-
-  let defaultGenres = [
-    {
-      id: 1,
-      name: "Hoạt hình",
-      description: "Phim hoạt hình cho mọi lứa tuổi"
-    },
-    {
-      id: 2,
-      name: "Chính kịch",
-      description: "Phim chính kịch nghiêm túc"
-    },
-    {
-      id: 3,
-      name: "Phiêu lưu",
-      description: "Phim phiêu lưu mạo hiểm"
-    },
-    {
-      id: 4,
-      name: "Khoa học viễn tưởng",
-      description: "Phim khoa học viễn tưởng"
-    },
-    {
-      id: 5,
-      name: "Kinh dị",
-      description: "Phim kinh dị, giật gân"
-    },
-    {
-      id: 6,
-      name: "Hài",
-      description: "Phim hài kịch giải trí",
-    },
-    {
-      id: 7,
-      name: "Tình cảm",
-      description: "Phim tình cảm, lãng mạn"
-    },
-    {
-      id: 8,
-      name: "Hành động",
-      description: "Phim hành động"
-    },
-    {
-      id: 9,
-      name: "Sinh tồn",
-      description: "Phim sinh tồn, kịch tính"
-    }
-  ];
-  let genres = JSON.parse(sessionStorage.getItem("btl-genres")) ?? defaultGenres;
-  function saveGenres() {
-    sessionStorage.setItem("btl-genres", JSON.stringify(genres));
-}
-
-  let editingId = null;
-  let nextId = Math.max(8, ...genres.map(genre => genre.id)) + 1;
-
-  function renderGenres() {
-    tbody.replaceChildren();
-
-    const keyword = search.value.trim().toLocaleLowerCase("vi");
-
-    const results = genres.filter(genre =>
-      genre.name.toLocaleLowerCase("vi").includes(keyword)
-    );
-    results.sort((a, b) => a.id - b.id);
-
-    if (results.length === 0) {
-      const row = document.createElement("tr");
-      const cell = document.createElement("td");
-
-      cell.colSpan = 4;
-      cell.className = "empty";
-      cell.textContent = "Không tìm thấy thể loại.";
-
-      row.append(cell);
-      tbody.append(row);
-      return;
-    }
-
-    results.forEach(genre => {
-      const row = document.createElement("tr");
-
-      const idCell = document.createElement("td");
-      idCell.textContent = genre.id;
-
-      const nameCell = document.createElement("td");
-      nameCell.className = "genre-name";
-      nameCell.textContent = genre.name;
-
-      const descriptionCell = document.createElement("td");
-      descriptionCell.textContent = genre.description;
-
-      const actionsCell = document.createElement("td");
-      actionsCell.className = "actions";
-
-      const editButton = document.createElement("button");
-      editButton.type = "button";
-      editButton.className = "edit";
-      editButton.setAttribute("aria-label", `Sửa ${genre.name}`);
-
-      const editIcon = document.createElement("i");
-      editIcon.className = "bi bi-pencil-square";
-      editButton.append(editIcon);
-
-      editButton.onclick = () => openEditor(genre);
-
-      const deleteButton = document.createElement("button");
-      deleteButton.type = "button";
-      deleteButton.className = "delete";
-      deleteButton.setAttribute("aria-label", `Xóa ${genre.name}`);
-
-      const deleteIcon = document.createElement("i");
-      deleteIcon.className = "bi bi-trash-fill";
-      deleteButton.append(deleteIcon);
-
-      deleteButton.onclick = () => {
-        if (!confirm(`Xóa thể loại "${genre.name}"?`)) return;
-
-        genres = genres.filter(item => item.id !== genre.id);
-        saveGenres();
-        renderGenres();
-        notice.textContent = "Xóa thể loại thành công!";
-      };
-
-      actionsCell.append(editButton, deleteButton);
-      row.append(idCell, nameCell, descriptionCell, actionsCell);
-      tbody.append(row);
     });
   }
-
-  function openEditor(genre = null) {
-    form.reset();
-    notice.textContent = "";
-    editingId = genre ? genre.id : null;
-
-    formTitle.textContent = genre ? "Sửa thể loại" : "Thêm thể loại";
-    saveButton.textContent = genre ? "Cập nhật" : "Thêm mới";
-
-    if (genre) {
-      nameInput.value = genre.name;
-      descriptionInput.value = genre.description;
-    }
-
-    editor.showModal();
-    nameInput.focus();
-  }
-
-  editor.addEventListener("cancel", event => { event.preventDefault(); closeEditor(); });
-
-  function closeEditor() {
-    editor.close();
-    editingId = null;
-  }
-
-  document.getElementById("addGenre").onclick = () => openEditor();
-
-  document.getElementById("cancelGenre").onclick = () => {
-    closeEditor();
-    notice.textContent = "";
+  date.addEventListener('change', renderTheaterMovies);
+  document.getElementById('searchInput').oninput = event => {
+    theaterNames.forEach(name => {
+      name.closest('tr').hidden = !name.textContent.toLocaleLowerCase('vi').includes(event.target.value.trim().toLocaleLowerCase('vi'));
+    });
   };
-
-  search.oninput = renderGenres;
-
-  form.onsubmit = event => {
-    event.preventDefault();
-
-    const name = nameInput.value.trim();
-    const description = descriptionInput.value.trim();
-
-    if (!name) {
-      nameInput.setCustomValidity("Vui lòng nhập tên thể loại.");
-      nameInput.reportValidity();
-      return;
-    }
-
-    const duplicate = genres.some(genre =>
-      genre.id !== editingId &&
-      genre.name.toLocaleLowerCase("vi") === name.toLocaleLowerCase("vi")
-    );
-
-    if (duplicate) {
-      nameInput.setCustomValidity("Tên thể loại đã tồn tại.");
-      nameInput.reportValidity();
-      return;
-    }
-
-    const isEditing = editingId !== null;
-
-    if (isEditing) {
-      genres = genres.map(genre =>
-        genre.id === editingId
-          ? { ...genre, name, description }
-          : genre
-      );
-    } else {
-      genres.unshift({
-        id: nextId++,
-        name,
-        description
-      });
-    }
-    saveGenres();
-    search.value = "";
-    renderGenres();
-    closeEditor();
-
-    notice.textContent = isEditing
-      ? "Cập nhật thể loại thành công!"
-      : "Thêm thể loại thành công!";
-  };
-
-  nameInput.oninput = () => {
-    nameInput.setCustomValidity("");
-  };
-
-  renderGenres();
-}
-
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", initGenresPage);
-} else {
-  initGenresPage();
+  renderTheaterMovies();
 }
