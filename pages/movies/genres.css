@@ -67,10 +67,6 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   font-weight: 600;
 }
 
-#mainContent .primary:hover {
-  background: #d32f2f;
-}
-
 /* Tìm kiếm và lọc */
 #mainContent .filters {
   display: flex;
@@ -81,18 +77,6 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   border-radius: 9px;
   box-shadow: 0 2px 5px rgb(0 0 0 / 6%);
 }
-#mainContent .filters input {
-  padding: 13px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background: white;
-  color: #43505c;
-}
-#mainContent .filters input:focus {
-  outline: 2px solid #9fc3df;
-  outline-offset: 1px;
-}
-
 #mainContent .table-wrap {
   overflow-x: auto;
   background: white;
@@ -135,41 +119,21 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 #mainContent .actions {
   white-space: nowrap;
 }
-
-#mainContent .edit,
-#mainContent .delete {
-  padding: 7px;
-  background: transparent;
-  font-size: 23px;
-}
-
-#mainContent .edit {
-  color: #238ac7;
-}
-
-#mainContent .delete {
-  color: #dc3545;
-}
-
 #mainContent .empty {
   text-align: center;
   color: #888;
 }
-
 @media (max-width: 768px) {
   #mainContent {
     padding: 20px 16px;
   }
-
   #mainContent .heading h2 {
     font-size: 21px;
   }
-
   #mainContent .primary {
     padding: 12px 14px;
     font-size: 13px;
   }
-
   #mainContent .filters {
     flex-direction: column;
     padding: 18px;
@@ -178,11 +142,6 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 
 #genresPage [hidden] {
   display: none !important;
-}
-
-#genresPage #genreSearch {
-  width: 420px;
-  max-width: 100%;
 }
 
 #mainContent #genresPage .genres-table {
@@ -281,12 +240,10 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   #genresPage #genreSearch {
     width: 100%;
   }
-
   #genresPage .genre-card {
     padding: 18px;
   }
 }
-
 #mainContent .heading #addGenre {
   display: inline-flex;
   align-items: center;
