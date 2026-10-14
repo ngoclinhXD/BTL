@@ -76,29 +76,7 @@ BTL/
 
 Chỉnh sửa `shared-state.js` để thay đổi dữ liệu phim và đặt vé mặc định. Dữ liệu sản phẩm ban đầu nằm trong `pages/products/products.js`.
 
-## Kiểm thử
-
-Các bài kiểm thử dữ liệu cần Node.js và chỉ sử dụng các mô-đun có sẵn:
-
-```sh
-node tests/shared-state.test.js
-node tests/booking-sort.test.js
-```
-
-Các bài kiểm thử trên trình duyệt cần thêm Playwright và Chromium. Cài các thư viện phục vụ kiểm thử tại thư mục dự án:
-
-```sh
-npm install --no-save --package-lock=false playwright
-npx playwright install chromium
-```
-
-Sau đó chạy:
-
-```sh
-node tests/form-dialog.test.js
-node tests/image-upload.test.js
-```
-
 Các bài kiểm thử kiểm tra dữ liệu dùng chung, tính hợp lệ của suất chiếu, thứ tự đặt vé, hộp thoại, chọn ảnh, kéo thả và kiểm tra định dạng/dung lượng ảnh. Kiểm thử trình duyệt mở các tệp HTML cục bộ nên không cần khởi động máy chủ web.
 
 Để dùng Chrome đã cài trên máy thay cho Chromium của Playwright, đặt biến môi trường `CHROME_PATH` thành đường dẫn tới tệp thực thi Chrome khi chạy bài kiểm thử trình duyệt.
+
