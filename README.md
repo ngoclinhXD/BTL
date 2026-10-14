@@ -1,104 +1,104 @@
-# Cinema Management
+# Quản lý rạp chiếu phim
 
-A Vietnamese cinema administration demo built with HTML, CSS, and plain JavaScript. It includes movie and genre management, screening schedules, a theater directory, product management, and sample bookings.
+Ứng dụng demo quản trị rạp chiếu phim với giao diện tiếng Việt, được xây dựng bằng HTML, CSS và JavaScript thuần. Các chức năng gồm quản lý phim, thể loại, suất chiếu, danh sách rạp, sản phẩm và dữ liệu đặt vé mẫu.
 
-The application runs entirely in the browser. There is no backend or database server.
+Ứng dụng chạy hoàn toàn trên trình duyệt, chưa có backend hoặc máy chủ cơ sở dữ liệu.
 
-## Run locally
+## Chạy trên máy
 
-No build step or application dependencies are required. From the project root, start a local web server:
+Không cần biên dịch hay cài thư viện để chạy ứng dụng. Tại thư mục gốc của dự án, khởi động máy chủ web cục bộ:
 
 ```sh
 python3 -m http.server 8000 --bind 127.0.0.1
 ```
 
-Open [http://localhost:8000](http://localhost:8000) and sign in:
+Mở [http://localhost:8000](http://localhost:8000) và đăng nhập:
 
-| Field | Demo value |
+| Thông tin | Giá trị demo |
 | --- | --- |
-| Username | `utcadmin` |
-| Password | `12345678` |
+| Tên tài khoản | `utcadmin` |
+| Mật khẩu | `12345678` |
 
-Use the root `index.html` as the entry point. Opening the login page directly redirects to it. Opening local files may work, but a local server avoids browser restrictions around storage and embedded pages.
+Dùng `index.html` tại thư mục gốc để mở ứng dụng. Nếu mở trực tiếp trang đăng nhập, ứng dụng sẽ chuyển về trang này. Có thể mở các tệp HTML trực tiếp, nhưng chạy qua máy chủ cục bộ giúp tránh các hạn chế của trình duyệt về lưu trữ và trang nhúng.
 
-The demo login is checked in client-side JavaScript. It is intended for demonstration, not real account security.
+Thông tin đăng nhập demo được kiểm tra bằng JavaScript trên trình duyệt. Cách này chỉ phục vụ trình diễn, không bảo mật được tài khoản thực tế.
 
-## Features
+## Chức năng
 
-| Page | What it does |
+| Trang | Chức năng |
 | --- | --- |
-| Overview | Displays the current date/time, total movies, movies currently showing, and booking count. |
-| Movies | Lists 13 sample movies; supports search, status filtering, adding, editing, and deleting movies. |
-| Genres | Supports searching, adding, editing, and deleting genres. |
-| Screenings | Supports adding, editing, deleting, and filtering screenings by date, movie, and theater. Checks release dates, room availability, and overlapping screenings. |
-| Theaters | Shows theater contact information, search, and status controls. |
-| Products | Supports search, status filtering, and adding, editing, or deleting food, drinks, and combos. |
-| Bookings | Displays 9 sample bookings, searches by booking code/customer/movie, and sorts by screening date and time, newest first. |
+| Tổng quan | Hiển thị ngày giờ hiện tại, tổng số phim, số phim đang chiếu và số lượt đặt vé. |
+| Phim | Hiển thị 13 phim mẫu; hỗ trợ tìm kiếm, lọc trạng thái, thêm, sửa và xóa phim. |
+| Thể loại | Hỗ trợ tìm kiếm, thêm, sửa và xóa thể loại. |
+| Suất chiếu | Hỗ trợ thêm, sửa, xóa và lọc suất chiếu theo ngày, phim và rạp. Kiểm tra ngày khởi chiếu, phòng hợp lệ và các suất chiếu trùng thời gian. |
+| Rạp chiếu | Hiển thị thông tin liên hệ của rạp, hỗ trợ tìm kiếm và thay đổi trạng thái. |
+| Sản phẩm | Hỗ trợ tìm kiếm, lọc trạng thái, thêm, sửa và xóa đồ ăn, nước uống, combo. |
+| Đặt vé | Hiển thị 9 lượt đặt vé mẫu; tìm kiếm theo mã đặt vé, khách hàng hoặc phim; sắp xếp theo ngày giờ chiếu, mới nhất lên đầu. |
 
-Movie posters and product images support file selection and drag and drop, with a preview. Accepted formats are JPG, PNG, and GIF, up to 5 MB per image.
+Poster phim và ảnh sản phẩm hỗ trợ chọn tệp, kéo thả và xem trước ảnh. Các định dạng được chấp nhận là JPG, PNG và GIF, tối đa 5 MB mỗi ảnh.
 
-The sidebar uses hash routes such as `#movies`, `#showtimes`, and `#booking`. Each page loads in an iframe. Movie release dates link to the screening page with the movie and date selected.
+Thanh điều hướng sử dụng các đường dẫn dạng hash như `#movies`, `#showtimes` và `#booking`. Mỗi trang được tải trong một iframe. Nhấn vào ngày khởi chiếu của phim sẽ mở trang suất chiếu với phim và ngày tương ứng được chọn sẵn.
 
-## Demo data and persistence
+## Dữ liệu demo và cách lưu trữ
 
-- Movies, genres, and screenings use `sessionStorage` to share changes between pages in the same tab.
-- Reloading the root application resets movies, screenings, bookings, and genres to their default data. The login flag remains until logout or the browser session ends.
-- Products are stored in memory. Leaving and reopening the Products page resets its changes.
-- Theater status changes are temporary UI changes.
-- Bookings are sample records, separate from the editable screening schedule. Clicking a booking code currently displays an alert rather than a detail page.
-- Uploaded images are read as data URLs; they are not uploaded to a server. Large posters may reach the browser's storage limit.
-- Movie status is calculated from the release date: upcoming before release, showing for the first 21 days, then ended. This is a demo rule, not a live cinema schedule.
-- Ratings are stored values, not a live IMDb integration. Poster and rating references are recorded in [the image sources file](pages/movies/images/sources.md).
+- Phim, thể loại và suất chiếu sử dụng `sessionStorage` để chia sẻ thay đổi giữa các trang trong cùng một tab.
+- Tải lại ứng dụng từ trang gốc sẽ đưa dữ liệu phim, suất chiếu, đặt vé và thể loại về mặc định. Trạng thái đăng nhập được giữ đến khi đăng xuất hoặc phiên trình duyệt kết thúc.
+- Sản phẩm được lưu trong bộ nhớ. Rời trang Sản phẩm rồi mở lại sẽ làm mất các thay đổi.
+- Thay đổi trạng thái rạp chỉ có hiệu lực tạm thời trên giao diện.
+- Các lượt đặt vé là dữ liệu mẫu riêng, chưa liên kết với lịch suất chiếu có thể chỉnh sửa. Nhấn vào mã đặt vé hiện chỉ mở thông báo, chưa có trang chi tiết.
+- Ảnh được chọn được đọc dưới dạng data URL, không tải lên máy chủ. Poster có dung lượng lớn có thể làm đầy bộ nhớ lưu trữ của trình duyệt.
+- Trạng thái phim được tính theo ngày khởi chiếu: sắp chiếu trước ngày khởi chiếu, đang chiếu trong 21 ngày đầu, sau đó ngừng chiếu. Đây là quy tắc demo, không phải lịch chiếu thực tế của rạp.
+- Điểm đánh giá được lưu cố định, chưa tự cập nhật từ IMDb. Nguồn poster và điểm đánh giá được ghi trong [tệp nguồn ảnh](pages/movies/images/sources.md).
 
-Google Fonts, Bootstrap Icons, and some sample product images load from external websites. Local movie posters and the login background are included in the repository.
+Google Fonts, Bootstrap Icons và một số ảnh sản phẩm mẫu được tải từ website bên ngoài. Poster phim và ảnh nền đăng nhập được lưu sẵn trong dự án.
 
-## Project structure
+## Cấu trúc dự án
 
 ```text
 BTL/
-├── index.html              # Application shell and sidebar
-├── app.js                  # Routing, demo login, iframe messages
-├── shared-state.js         # Sample data, storage, screening validation
-├── styles.css              # Application layout
-├── control.css             # Shared controls
-├── form-dialog.js          # Shared dialog behavior
-├── form-dialog.css         # Shared dialog styles
+├── index.html              # Khung ứng dụng và thanh điều hướng
+├── app.js                  # Điều hướng, đăng nhập demo, trao đổi với iframe
+├── shared-state.js         # Dữ liệu mẫu, lưu trữ, kiểm tra suất chiếu
+├── styles.css              # Bố cục ứng dụng
+├── control.css             # Kiểu hiển thị các điều khiển dùng chung
+├── form-dialog.js          # Xử lý hộp thoại dùng chung
+├── form-dialog.css         # Kiểu hiển thị hộp thoại dùng chung
 ├── pages/
 │   ├── lam/
-│   │   ├── login/          # Login page and background
-│   │   └── tongquan/       # Overview
-│   ├── movies/             # Movies, genres, and poster assets
-│   ├── doanthai/           # Screenings and theaters
-│   ├── booking/            # Sample booking list
-│   └── products/           # Products
-└── tests/                  # Node.js and Playwright checks
+│   │   ├── login/          # Trang đăng nhập và ảnh nền
+│   │   └── tongquan/       # Trang tổng quan
+│   ├── movies/             # Phim, thể loại và poster
+│   ├── doanthai/           # Suất chiếu và rạp chiếu
+│   ├── booking/            # Danh sách đặt vé mẫu
+│   └── products/           # Sản phẩm
+└── tests/                  # Kiểm thử bằng Node.js và Playwright
 ```
 
-Edit `shared-state.js` to change the default movie and booking data. Initial product data lives in `pages/products/products.js`.
+Chỉnh sửa `shared-state.js` để thay đổi dữ liệu phim và đặt vé mặc định. Dữ liệu sản phẩm ban đầu nằm trong `pages/products/products.js`.
 
-## Tests
+## Kiểm thử
 
-The data checks require Node.js and use only its built-in modules:
+Các bài kiểm thử dữ liệu cần Node.js và chỉ sử dụng các mô-đun có sẵn:
 
 ```sh
 node tests/shared-state.test.js
 node tests/booking-sort.test.js
 ```
 
-Browser checks additionally require Playwright and Chromium. Install the test dependencies locally:
+Các bài kiểm thử trên trình duyệt cần thêm Playwright và Chromium. Cài các thư viện phục vụ kiểm thử tại thư mục dự án:
 
 ```sh
 npm install --no-save --package-lock=false playwright
 npx playwright install chromium
 ```
 
-Then run:
+Sau đó chạy:
 
 ```sh
 node tests/form-dialog.test.js
 node tests/image-upload.test.js
 ```
 
-These tests cover shared data, screening validation, booking order, dialogs, image selection, drag and drop, and image validation. Browser tests open local HTML files; the development server does not need to be running.
+Các bài kiểm thử kiểm tra dữ liệu dùng chung, tính hợp lệ của suất chiếu, thứ tự đặt vé, hộp thoại, chọn ảnh, kéo thả và kiểm tra định dạng/dung lượng ảnh. Kiểm thử trình duyệt mở các tệp HTML cục bộ nên không cần khởi động máy chủ web.
 
-To use an installed Chrome instead of Playwright's Chromium, set `CHROME_PATH` to the Chrome executable when running a browser test.
+Để dùng Chrome đã cài trên máy thay cho Chromium của Playwright, đặt biến môi trường `CHROME_PATH` thành đường dẫn tới tệp thực thi Chrome khi chạy bài kiểm thử trình duyệt.
