@@ -6,13 +6,7 @@
 
 ## Chạy trên máy
 
-Không cần biên dịch hay cài thư viện để chạy ứng dụng. Tại thư mục gốc của dự án, khởi động máy chủ web cục bộ:
-
-```sh
-python3 -m http.server 8000 --bind 127.0.0.1
-```
-
-Mở [http://localhost:8000](http://localhost:8000) và đăng nhập:
+Không cần biên dịch hay cài thư viện để chạy ứng dụng. Tại thư mục gốc của dự án, mở index.html và đăng nhập:
 
 | Thông tin | Giá trị demo |
 | --- | --- |
