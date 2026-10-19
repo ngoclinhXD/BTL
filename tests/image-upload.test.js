@@ -1,21 +1,21 @@
 const { chromium } = require('playwright');
 const assert = require('node:assert/strict');
-const { pathToFileURL } = require('node:url');
-const path = require('node:path');
 (async () => {
   const browser = await chromium.launch({ headless: true, ...(process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : {}) });
   try {
     const page = await browser.newPage();
+    await page.addInitScript(() => sessionStorage.setItem('btl.loggedIn', 'true'));
+    const root = process.env.BASE_URL || 'http://127.0.0.1:8000/';
     const errors = [];
     const alerts = [];
     page.on('pageerror', error => errors.push(error.message));
     page.on('dialog', async dialog => { alerts.push(dialog.message()); await dialog.accept(); });
     const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aN1sAAAAASUVORK5CYII=', 'base64');
     for (const [file, add, input, drop, preview] of [
-      ['products/products.html', '#btn-add-product', '#product-image', '#product-image-drop', '#product-image-preview'],
-      ['movies/movies.html', '#add', '#posterFile', '#posterDrop', '#posterPreview']
+      ['admin/products/', '#btn-add-product', '#product-image', '#product-image-drop', '#product-image-preview'],
+      ['admin/movies/', '#add', '#posterFile', '#posterDrop', '#posterPreview']
     ]) {
-      await page.goto(pathToFileURL(path.resolve(__dirname, '../pages', file)).href);
+      await page.goto(root + file);
       await page.locator(add).click();
       assert.equal(await page.locator(input).evaluate(e => getComputedStyle(e, '::file-selector-button').backgroundColor), 'rgb(215, 44, 44)');
       await page.locator(input).setInputFiles({ name: 'picked.png', mimeType: 'image/png', buffer: png });
@@ -33,7 +33,7 @@ const path = require('node:path');
       }, [...png]);
       await page.waitForFunction(selector => document.querySelector(selector).files[0]?.name === 'dropped.png', input);
       await page.waitForFunction(selector => document.querySelector(selector).src.startsWith('data:image/png'), preview);
-      if (file.startsWith('products')) {
+      if (file.startsWith('admin/products')) {
         await page.locator('#product-name').fill('Ảnh kiểm tra');
         await page.locator('#product-price').fill('10000');
         await page.locator('#product-stock').fill('2');

@@ -1,75 +1,26 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hệ thống Quản lý Rạp Chiếu Phim</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-  <link rel="stylesheet" href="styles.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <meta name="description" content="Lịch chiếu, thông tin phim và thông tin rạp tại Trung tâm Chiếu phim Giao thông vận tải. Giao diện bài tập lớn.">
+  <meta name="theme-color" content="#101116">
+  <title>Trung tâm Chiếu phim Giao thông vận tải | UCC</title>
+  <link rel="icon" href="/assets/ucc/logo.png" type="image/png">
+  <link rel="preload" href="/assets/ucc/montserrat-vietnamese.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/assets/ucc/montserrat-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/assets/vendor/lenis/lenis.css?v=1.3.27">
+  <link rel="stylesheet" href="/public.css?v=my-tickets-20261020">
 </head>
-<body class="application-shell login-screen">
-
-<aside class="sidebar" id="sidebar">
-  <div class="sidebar-logo">
-    <div class="logo-icon">
-      <i class="bi bi-camera-reels-fill"></i>
-    </div>
-    <span class="logo-text">Quản Trị</span>
-    <button class="sidebar-toggle" id="sidebarToggle" aria-label="Thu gọn thanh điều hướng" aria-expanded="true">
-      <i class="bi bi-list"></i>
-    </button>
-  </div>
-
-  <nav class="sidebar-nav">
-    <a class="nav-item" href="#home" data-page="home" id="nav-dashboard">
-      <i class="bi bi-grid-1x2 nav-icon"></i>
-      <span class="nav-label">Tổng quan</span>
-    </a>
-    <a class="nav-item" href="#movies" data-page="movies" id="nav-movies">
-      <i class="bi bi-film nav-icon"></i>
-      <span class="nav-label">Phim</span>
-    </a>
-    <a class="nav-item" href="#genres" data-page="genres" id="nav-genres">
-      <i class="bi bi-tags nav-icon"></i>
-      <span class="nav-label">Thể loại</span>
-    </a>
-    <a class="nav-item" href="#showtimes" data-page="showtimes" id="nav-showtimes">
-      <i class="bi bi-calendar-event nav-icon"></i>
-      <span class="nav-label">Suất chiếu</span>
-    </a>
-    <a class="nav-item" href="#theaters" data-page="theaters" id="nav-theaters">
-      <i class="bi bi-building nav-icon"></i>
-      <span class="nav-label">Rạp chiếu</span>
-    </a>
-    <a class="nav-item" href="#products" data-page="products" id="nav-products">
-      <i class="bi bi-bag nav-icon"></i>
-      <span class="nav-label">Sản phẩm</span>
-    </a>
-    <a class="nav-item" href="#booking" data-page="booking" id="nav-bookings">
-      <i class="bi bi-ticket-perforated nav-icon"></i>
-      <span class="nav-label">Danh sách vé</span>
-    </a>
-  </nav>
-
-  <div class="sidebar-footer">
-    <div class="user-info">
-      <div class="user-avatar">QT</div>
-      <span class="user-name">Quản trị viên</span>
-    </div>
-    <button class="btn-logout" id="btnLogout" title="Đăng xuất">
-      <i class="bi bi-box-arrow-right"></i>
-    </button>
-  </div>
-</aside>
-
-<div class="main-wrapper">
-  <main class="content" id="content">
-    <iframe id="pageFrame" title="Quản lý đặt vé"></iframe>
-  </main>
-</div>
-
-<script src="shared-state.js"></script>
-<script src="app.js"></script>
+<body data-page="home">
+  <a class="skip-link" href="#main">Đến nội dung chính</a>
+  <header id="site-header" class="site-header"></header>
+  <main id="main" tabindex="-1"></main>
+  <footer id="site-footer" class="site-footer"></footer>
+  <noscript>Vui lòng bật JavaScript để xem phim và lịch chiếu.</noscript>
+  <script src="/shared-state.js?v=my-tickets-20261020"></script>
+  <script src="/public.js?v=my-tickets-20261020"></script>
+  <script src="/assets/vendor/lenis/lenis.min.js?v=1.3.27"></script>
+  <script src="/public-scroll.js?v=20261020"></script>
 </body>
 </html>
