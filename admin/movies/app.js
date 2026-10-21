@@ -1,3 +1,4 @@
+// Khởi tạo trang quản lý phim và lấy các thành phần trên giao diện.
 function initMoviesPage() {
   const tbody = document.getElementById("movies");
   const search = document.getElementById("search");
@@ -9,12 +10,9 @@ function initMoviesPage() {
   const cancelButton = document.getElementById("cancel");
   const formTitle = document.getElementById("form-title");
 
-  if (!tbody || !search || !filter || !list || !editor ||
-  !form || !addButton || !cancelButton || !formTitle) {
+  if (!tbody || !search || !filter || !list || !editor || !form || !addButton || !cancelButton || !formTitle) {
     return;
   }
-
-
 
   const statusLabels = {
     showing: "ĐANG CHIẾU",
@@ -24,7 +22,6 @@ function initMoviesPage() {
 
   let movies = cinemaState.movies;
   let editingId = null;
-
 
   function createElement(tag, text, className) {
     const element = document.createElement(tag);
@@ -43,28 +40,22 @@ function initMoviesPage() {
   function saveMovies() {
     cinemaState.saveMovies(movies);
     renderMovies();
-    }
+  }
 
+  // Lọc và hiển thị danh sách phim.
   function renderMovies() {
     tbody.replaceChildren();
-
     const keyword = search.value.trim().toLocaleLowerCase("vi");
 
     const results = movies.filter(movie => {
-      const matchesSearch = movie.title
-        .toLocaleLowerCase("vi")
-        .includes(keyword);
-
-      const matchesStatus =
-        filter.value === "" || cinemaState.movieStatus(movie) === filter.value;
-
+      const matchesSearch = movie.title.toLocaleLowerCase("vi").includes(keyword);
+      const matchesStatus = filter.value === "" || cinemaState.movieStatus(movie) === filter.value;
       return matchesSearch && matchesStatus;
     });
 
     if (results.length === 0) {
       const row = createElement("tr");
       const cell = createElement("td", "Không tìm thấy phim.", "empty");
-
       cell.colSpan = 8;
       row.append(cell);
       tbody.append(row);
@@ -73,82 +64,75 @@ function initMoviesPage() {
 
     results.forEach(movie => {
       const row = createElement("tr");
-      const cells = Array.from(
-        { length: 8 },
-        () => createElement("td")
-      );
 
-    let poster;
+      const cells = Array.from({
+        length: 8
+      }, () => createElement("td"));
 
-    if (movie.poster) {
+      let poster;
+
+      if (movie.poster) {
         poster = createElement("img", undefined, "poster");
         poster.src = movie.poster;
         poster.alt = movie.title;
-    } 
-    else {
+      } else {
         poster = createElement("div", movie.title, "poster");
         poster.style.backgroundColor = movie.color || "#31465a";
-    }
+      }
 
-cells[0].append(poster);
-
-      cells[1].append(
-        createElement("div", movie.title, "title"),
-        createElement("div", movie.subtitle || "", "subtitle")
-      );
-
+      cells[0].append(poster);
+      cells[1].append(createElement("div", movie.title, "title"), createElement("div", movie.subtitle || "", "subtitle"));
       const tags = createElement("div", undefined, "tags");
 
       movie.genres.forEach(genre => {
         const tag = createElement("span", undefined, "tag");
         const icon = createElement("i", undefined, "bi bi-tag-fill");
-
         tag.append(icon, document.createTextNode(genre));
         tags.append(tag);
-    });
+      });
 
       cells[2].append(tags);
-
       cells[3].textContent = `${movie.duration} phút`;
       const screeningLink = createElement("a", movie.date.split("-").reverse().join("/"));
+
       screeningLink.href = "/admin/showtimes/?" + new URLSearchParams({
-        date: movie.date, movieId: String(movie.id)
+        date: movie.date,
+        movieId: String(movie.id)
       });
+
       screeningLink.target = "_top";
       cells[4].append(screeningLink);
 
       cells[5].append(
-        createElement("span", statusLabels[cinemaState.movieStatus(movie)],`status ${cinemaState.movieStatus(movie)}`));
+        createElement("span", statusLabels[cinemaState.movieStatus(movie)], `status ${cinemaState.movieStatus(movie)}`)
+      );
 
       cells[6].className = "rating";
+
       cells[6].append(
         createElement("span", "★ ", "star"),
         document.createTextNode(movie.rating == null ? "Chưa có điểm" : `${movie.rating.toFixed(1)}/10`)
       );
-      cells[7].className = "actions";
 
+      cells[7].className = "actions";
       const editButton = createElement("button", undefined, "edit");
       editButton.type = "button";
       editButton.title = "Sửa phim";
       editButton.setAttribute("aria-label", `Sửa ${movie.title}`);
-      editButton.append(
-        createElement("i", undefined, "bi bi-pencil")
-      );
+      editButton.append(createElement("i", undefined, "bi bi-pencil"));
       editButton.onclick = () => openForm(movie);
-
       const deleteButton = createElement("button", undefined, "delete");
       deleteButton.type = "button";
       deleteButton.title = "Xóa phim";
       deleteButton.setAttribute("aria-label", `Xóa ${movie.title}`);
-      deleteButton.append(
-        createElement("i", undefined, "bi bi-trash")
-      );
+      deleteButton.append(createElement("i", undefined, "bi bi-trash"));
 
       deleteButton.onclick = () => {
         if (cinemaState.screenings.some(show => show.movieId === String(movie.id))) {
           alert("Phim đang có suất chiếu. Hãy xóa suất chiếu trước khi xóa phim.");
           return;
         }
+
         if (confirm(`Bạn muốn xóa phim "${movie.title}"?`)) {
           movies = movies.filter(item => item.id !== movie.id);
           saveMovies();
@@ -166,35 +150,29 @@ cells[0].append(poster);
   const preview = document.getElementById("posterPreview");
   const genreOptions = document.getElementById("movieGenreOptions");
   const saveButton = document.getElementById("saveMovie");
-
   let currentPoster = "";
   let posterLoading = false;
   let imageReadVersion = 0;
 
-  function renderGenresOptions(){
+  // Tạo các lựa chọn thể loại cho form phim.
+  function renderGenresOptions() {
     const availableGenres = cinemaState.genres.map(genre => genre.name);
-
     genreOptions.replaceChildren();
+
     availableGenres.forEach(genre => {
-      const label=document.createElement("label");
-      const input=document.createElement("input");
+      const label = document.createElement("label");
+      const input = document.createElement("input");
       input.type = "checkbox";
       input.name = "genres";
       input.value = genre;
-
-      label.append(input,genre);
+      label.append(input, genre);
       genreOptions.append(label);
     });
   }
 
   function updateSelectedGenres() {
-    const selected = Array.from(
-      genreOptions.querySelectorAll("input:checked")
-    ).map(input => input.value);
-
-    document.getElementById("selectedGenreCount").textContent =
-      selected.length;
-
+    const selected = Array.from(genreOptions.querySelectorAll("input:checked")).map(input => input.value);
+    document.getElementById("selectedGenreCount").textContent = selected.length;
     const tags = document.getElementById("selectedGenreTags");
     tags.replaceChildren();
 
@@ -205,6 +183,7 @@ cells[0].append(poster);
 
   genreOptions.onchange = updateSelectedGenres;
 
+  // Cập nhật ảnh xem trước của poster.
   function updatePosterPreview() {
     previewBox.hidden = !currentPoster;
 
@@ -216,20 +195,26 @@ cells[0].append(poster);
   }
 
   const posterDrop = document.getElementById("posterDrop");
+
   posterDrop.ondragover = event => {
     event.preventDefault();
     posterDrop.classList.add("is-dragging");
   };
+
   posterDrop.ondragleave = event => {
-    if (!posterDrop.contains(event.relatedTarget)) posterDrop.classList.remove("is-dragging");
+    if (!posterDrop.contains(event.relatedTarget))
+      posterDrop.classList.remove("is-dragging");
   };
+
   posterDrop.ondrop = event => {
     event.preventDefault();
     posterDrop.classList.remove("is-dragging");
+
     if (event.dataTransfer.files.length !== 1) {
       alert("Chọn một ảnh mỗi lần.");
       return;
     }
+
     posterFile.files = event.dataTransfer.files;
     posterFile.onchange();
   };
@@ -237,9 +222,10 @@ cells[0].append(poster);
   posterFile.onchange = () => {
     const version = ++imageReadVersion;
     posterLoading = false;
-
     const file = posterFile.files[0];
-    if (!file) return;
+
+    if (!file)
+      return;
 
     const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
 
@@ -253,7 +239,8 @@ cells[0].append(poster);
     const reader = new FileReader();
 
     reader.onload = () => {
-      if (version !== imageReadVersion) return;
+      if (version !== imageReadVersion)
+        return;
 
       currentPoster = reader.result;
       posterLoading = false;
@@ -261,7 +248,8 @@ cells[0].append(poster);
     };
 
     reader.onerror = () => {
-      if (version !== imageReadVersion) return;
+      if (version !== imageReadVersion)
+        return;
 
       posterLoading = false;
       posterFile.value = "";
@@ -279,27 +267,24 @@ cells[0].append(poster);
     updatePosterPreview();
   };
 
+  // Điền dữ liệu khi thêm hoặc sửa phim.
   function openForm(movie = null) {
     imageReadVersion++;
     posterLoading = false;
     form.reset();
-
     renderGenresOptions();
-
     editingId = movie ? movie.id : null;
     currentPoster = movie?.poster || "";
-
     formTitle.textContent = movie ? "Sửa phim" : "Thêm phim mới";
     saveButton.textContent = movie ? "Cập nhật" : "Tạo mới";
 
     if (movie) {
-      const names = [
-        "title", "subtitle", "duration", "date", "endDate", "age", "language", "subtitles", "status"
-      ];
+      const names = ["title", "subtitle", "duration", "date", "endDate", "age", "language", "subtitles", "status"];
 
       names.forEach(name => {
         form.elements.namedItem(name).value = movie[name] ?? "";
       });
+
       form.elements.namedItem("status").value = cinemaState.movieStatus(movie);
     }
 
@@ -309,18 +294,26 @@ cells[0].append(poster);
 
     updatePosterPreview();
     updateSelectedGenres();
-
     editor.showModal();
-    window.scrollTo({ top: 0 });
+
+    window.scrollTo({
+      top: 0
+    });
   }
 
-  editor.addEventListener("cancel", event => { event.preventDefault(); closeMovieEditor(); });
+  editor.addEventListener("cancel", event => {
+    event.preventDefault();
+    closeMovieEditor();
+  });
 
   function closeMovieEditor() {
     imageReadVersion++;
     posterLoading = false;
     editor.close();
-    window.scrollTo({ top: 0 });
+
+    window.scrollTo({
+      top: 0
+    });
   }
 
   form.onsubmit = event => {
@@ -347,15 +340,7 @@ cells[0].append(poster);
       poster: currentPoster
     };
 
-    if (
-      !movieData.title ||
-      !movieData.genres.length ||
-      !Number.isFinite(movieData.duration) ||
-      movieData.duration < 1 ||
-      movieData.duration > 600 ||
-      !movieData.date ||
-      !(movieData.status in statusLabels)
-    ) {
+    if (!movieData.title || !movieData.genres.length || !Number.isFinite(movieData.duration) || movieData.duration < 1 || movieData.duration > 600 || !movieData.date || !(movieData.status in statusLabels)) {
       alert("Dữ liệu không hợp lệ!");
       return;
     }
@@ -366,14 +351,21 @@ cells[0].append(poster);
     }
 
     if (editingId !== null) {
-      const updatedMovies = movies.map(movie =>
-        movie.id === editingId ? { ...movie, ...movieData } : movie
-      );
+      const updatedMovies = movies.map(movie => movie.id === editingId ? {
+        ...movie,
+        ...movieData
+      } : movie);
+
       const invalidShow = cinemaState.screenings.find(show => cinemaState.screeningError(show, updatedMovies));
+
       if (invalidShow) {
-        alert("Thay đổi này không phù hợp với suất chiếu đã lưu: " + cinemaState.screeningError(invalidShow, updatedMovies));
+        alert(
+          "Thay đổi này không phù hợp với suất chiếu đã lưu: " + cinemaState.screeningError(invalidShow, updatedMovies)
+        );
+
         return;
       }
+
       movies = updatedMovies;
     } else {
       movies.push({
@@ -388,23 +380,26 @@ cells[0].append(poster);
     saveMovies();
     closeMovieEditor();
   };
+
   addButton.onclick = () => openForm();
   cancelButton.onclick = closeMovieEditor;
   search.oninput = renderMovies;
   filter.onchange = renderMovies;
-
   renderMovies();
 }
+
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", initMoviesPage);
 } else {
   initMoviesPage();
 }
 
+// Quản lý danh sách thể loại phim.
 function initGenresPage() {
   const page = document.getElementById("genresPage");
 
-  if (!page) return;
+  if (!page)
+    return;
 
   const tbody = document.getElementById("genresTable");
   const search = document.getElementById("genreSearch");
@@ -416,8 +411,8 @@ function initGenresPage() {
   const formTitle = document.getElementById("genreFormTitle");
   const saveButton = document.getElementById("saveGenre");
   const notice = document.getElementById("genreNotice");
-
   let genres = cinemaState.genres;
+
   function saveGenres() {
     cinemaState.saveGenres(genres);
   }
@@ -427,22 +422,16 @@ function initGenresPage() {
 
   function renderGenres() {
     tbody.replaceChildren();
-
     const keyword = search.value.trim().toLocaleLowerCase("vi");
-
-    const results = genres.filter(genre =>
-      genre.name.toLocaleLowerCase("vi").includes(keyword)
-    );
+    const results = genres.filter(genre => genre.name.toLocaleLowerCase("vi").includes(keyword));
     results.sort((a, b) => a.id - b.id);
 
     if (results.length === 0) {
       const row = document.createElement("tr");
       const cell = document.createElement("td");
-
       cell.colSpan = 4;
       cell.className = "empty";
       cell.textContent = "Không tìm thấy thể loại.";
-
       row.append(cell);
       tbody.append(row);
       return;
@@ -450,42 +439,34 @@ function initGenresPage() {
 
     results.forEach(genre => {
       const row = document.createElement("tr");
-
       const idCell = document.createElement("td");
       idCell.textContent = genre.id;
-
       const nameCell = document.createElement("td");
       nameCell.className = "genre-name";
       nameCell.textContent = genre.name;
-
       const descriptionCell = document.createElement("td");
       descriptionCell.textContent = genre.description;
-
       const actionsCell = document.createElement("td");
       actionsCell.className = "actions";
-
       const editButton = document.createElement("button");
       editButton.type = "button";
       editButton.className = "edit";
       editButton.setAttribute("aria-label", `Sửa ${genre.name}`);
-
       const editIcon = document.createElement("i");
       editIcon.className = "bi bi-pencil";
       editButton.append(editIcon);
-
       editButton.onclick = () => openEditor(genre);
-
       const deleteButton = document.createElement("button");
       deleteButton.type = "button";
       deleteButton.className = "delete";
       deleteButton.setAttribute("aria-label", `Xóa ${genre.name}`);
-
       const deleteIcon = document.createElement("i");
       deleteIcon.className = "bi bi-trash";
       deleteButton.append(deleteIcon);
 
       deleteButton.onclick = () => {
-        if (!confirm(`Xóa thể loại "${genre.name}"?`)) return;
+        if (!confirm(`Xóa thể loại "${genre.name}"?`))
+          return;
 
         genres = genres.filter(item => item.id !== genre.id);
         saveGenres();
@@ -503,7 +484,6 @@ function initGenresPage() {
     form.reset();
     notice.textContent = "";
     editingId = genre ? genre.id : null;
-
     formTitle.textContent = genre ? "Sửa thể loại" : "Thêm thể loại";
     saveButton.textContent = genre ? "Cập nhật" : "Thêm mới";
 
@@ -516,7 +496,10 @@ function initGenresPage() {
     nameInput.focus();
   }
 
-  editor.addEventListener("cancel", event => { event.preventDefault(); closeEditor(); });
+  editor.addEventListener("cancel", event => {
+    event.preventDefault();
+    closeEditor();
+  });
 
   function closeEditor() {
     editor.close();
@@ -534,7 +517,6 @@ function initGenresPage() {
 
   form.onsubmit = event => {
     event.preventDefault();
-
     const name = nameInput.value.trim();
     const description = descriptionInput.value.trim();
 
@@ -544,9 +526,8 @@ function initGenresPage() {
       return;
     }
 
-    const duplicate = genres.some(genre =>
-      genre.id !== editingId &&
-      genre.name.toLocaleLowerCase("vi") === name.toLocaleLowerCase("vi")
+    const duplicate = genres.some(
+      genre => genre.id !== editingId && genre.name.toLocaleLowerCase("vi") === name.toLocaleLowerCase("vi")
     );
 
     if (duplicate) {
@@ -558,11 +539,11 @@ function initGenresPage() {
     const isEditing = editingId !== null;
 
     if (isEditing) {
-      genres = genres.map(genre =>
-        genre.id === editingId
-          ? { ...genre, name, description }
-          : genre
-      );
+      genres = genres.map(genre => genre.id === editingId ? {
+        ...genre,
+        name,
+        description
+      } : genre);
     } else {
       genres.unshift({
         id: nextId++,
@@ -570,14 +551,12 @@ function initGenresPage() {
         description
       });
     }
+
     saveGenres();
     search.value = "";
     renderGenres();
     closeEditor();
-
-    notice.textContent = isEditing
-      ? "Cập nhật thể loại thành công!"
-      : "Thêm thể loại thành công!";
+    notice.textContent = isEditing ? "Cập nhật thể loại thành công!" : "Thêm thể loại thành công!";
   };
 
   nameInput.oninput = () => {

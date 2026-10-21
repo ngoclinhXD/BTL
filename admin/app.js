@@ -1,10 +1,14 @@
 (() => {
-  const loginKey = 'btl.loggedIn';
-  if (sessionStorage.getItem(loginKey) !== 'true') {
-    window.location.replace('/admin/login/?next=' + encodeURIComponent(window.location.pathname + window.location.search));
+  // Kiểm tra phiên đăng nhập quản trị.
+  const loginKey = "btl.loggedIn";
+
+  if (sessionStorage.getItem(loginKey) !== "true") {
+    window.location.replace("/admin/login/?next=" + encodeURIComponent(window.location.pathname + window.location.search));
     return;
   }
-  document.body.insertAdjacentHTML('afterbegin', `<aside class="sidebar" id="sidebar">
+
+  // Tạo thanh điều hướng của trang quản trị.
+  document.body.insertAdjacentHTML("afterbegin", `<aside class="sidebar" id="sidebar">
   <div class="sidebar-logo">
     <div class="logo-icon"><i class="bi bi-camera-reels-fill"></i></div>
     <span class="logo-text">Quản Trị</span>
@@ -50,31 +54,45 @@
     </button>
   </div>
 </aside>`);
-  const page = window.location.pathname.split('/')[2];
-  document.querySelectorAll('.nav-item').forEach(item => {
+
+  const page = window.location.pathname.split("/")[2];
+
+  document.querySelectorAll(".nav-item").forEach(item => {
     const active = item.dataset.page === page;
-    item.classList.toggle('active', active);
-    if (active) item.setAttribute('aria-current', 'page');
+    item.classList.toggle("active", active);
+
+    if (active)
+      item.setAttribute("aria-current", "page");
   });
-  const sidebarKey = 'btl.sidebarCollapsed';
-  const toggle = document.getElementById('sidebarToggle');
+
+  // Lưu và khôi phục trạng thái thu gọn thanh điều hướng.
+  const sidebarKey = "btl.sidebarCollapsed";
+
+  const toggle = document.getElementById("sidebarToggle");
+
   function setSidebarCollapsed(collapsed) {
-    document.body.classList.toggle('sidebar-collapsed', collapsed);
-    toggle.querySelector('i').className = collapsed ? 'bi bi-camera-reels-fill' : 'bi bi-list';
-    toggle.setAttribute('aria-expanded', String(!collapsed));
-    toggle.setAttribute('aria-label', collapsed ? 'Mở rộng thanh điều hướng' : 'Thu gọn thanh điều hướng');
+    document.body.classList.toggle("sidebar-collapsed", collapsed);
+    toggle.querySelector("i").className = collapsed ? "bi bi-camera-reels-fill" : "bi bi-list";
+    toggle.setAttribute("aria-expanded", String(!collapsed));
+    toggle.setAttribute("aria-label", collapsed ? "Mở rộng thanh điều hướng" : "Thu gọn thanh điều hướng");
   }
-  setSidebarCollapsed(localStorage.getItem(sidebarKey) === 'true');
-  toggle.addEventListener('click', () => {
-    const collapsed = toggle.getAttribute('aria-expanded') === 'true';
+
+  setSidebarCollapsed(localStorage.getItem(sidebarKey) === "true");
+
+  toggle.addEventListener("click", () => {
+    const collapsed = toggle.getAttribute("aria-expanded") === "true";
     setSidebarCollapsed(collapsed);
     localStorage.setItem(sidebarKey, String(collapsed));
   });
-  window.addEventListener('storage', event => {
-    if (event.key === sidebarKey) setSidebarCollapsed(event.newValue === 'true');
+
+  window.addEventListener("storage", event => {
+    if (event.key === sidebarKey)
+      setSidebarCollapsed(event.newValue === "true");
   });
-  document.getElementById('btnLogout').addEventListener('click', () => {
+
+  // Xóa phiên đăng nhập khi bấm đăng xuất.
+  document.getElementById("btnLogout").addEventListener("click", () => {
     sessionStorage.removeItem(loginKey);
-    window.location.assign('/admin/login/');
+    window.location.assign("/admin/login/");
   });
 })();
