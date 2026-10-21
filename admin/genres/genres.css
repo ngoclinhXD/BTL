@@ -1,12 +1,19 @@
 :root {
-
   --bg-primary: #f0f2f7;
   --text-primary: #1a1d2e;
   --border: #e4e7f0;
 }
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { font-size: 15px; }
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 15px;
+}
+
 body {
   font-family: 'Inter', sans-serif;
   background: var(--bg-primary);
@@ -14,12 +21,31 @@ body {
   min-height: 100vh;
   display: block;
 }
-a { color: inherit; text-decoration: none; }
-button { cursor: pointer; border: none; background: none; font-family: inherit; }
 
-::-webkit-scrollbar { width: 5px; }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-.content { padding: 24px 28px; }
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+.content {
+  padding: 24px 28px;
+}
 
 /* movies*/
 /* Nội dung quản lý phim */
@@ -47,8 +73,15 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   line-height: 1.2;
 }
 
-#mainContent .heading .primary { height: 42px; padding-block: 0; }
-#genreNotice:empty { display: none; }
+#mainContent .heading .primary {
+  height: 42px;
+  padding-block: 0;
+}
+
+#genreNotice:empty {
+  display: none;
+}
+
 #mainContent button,
 #mainContent input {
   font: inherit;
@@ -60,7 +93,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   border-radius: 5px;
 }
 
-#mainContent .primary{
+#mainContent .primary {
   padding: 14px 22px;
   background: #d32f2f;
   color: white;
@@ -77,6 +110,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   border-radius: 9px;
   box-shadow: 0 2px 5px rgb(0 0 0 / 6%);
 }
+
 #mainContent .table-wrap {
   overflow-x: auto;
   background: white;
@@ -119,21 +153,26 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 #mainContent .actions {
   white-space: nowrap;
 }
+
 #mainContent .empty {
   text-align: center;
   color: #888;
 }
+
 @media (max-width: 768px) {
   #mainContent {
     padding: 20px 16px;
   }
+
   #mainContent .heading h2 {
     font-size: 21px;
   }
+
   #mainContent .primary {
     padding: 12px 14px;
     font-size: 13px;
   }
+
   #mainContent .filters {
     flex-direction: column;
     padding: 18px;
@@ -210,7 +249,6 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   resize: vertical;
 }
 
-
 #genreForm input:focus,
 #genreForm textarea:focus {
   outline: 2px solid #9fc3df;
@@ -240,10 +278,12 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   #genresPage #genreSearch {
     width: 100%;
   }
+
   #genresPage .genre-card {
     padding: 18px;
   }
 }
+
 #mainContent .heading #addGenre {
   display: inline-flex;
   align-items: center;
